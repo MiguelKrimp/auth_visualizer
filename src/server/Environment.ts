@@ -1,5 +1,7 @@
 const EnvironmentVars = {
   development: process.env.DEVELOPMENT === "true",
+  demoUsername: process.env.DEMO_USER_USERNAME as string,
+  demoPassword: process.env.DEMO_USER_PASSWORD as string,
 
   // server
   port: Number(process.env.PORT),
