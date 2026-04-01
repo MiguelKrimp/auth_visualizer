@@ -4,6 +4,7 @@ import { AuthenticationMiddleware } from "../../middleware/AuthenticationMiddlew
 import { SecuredResource } from "../SecuredResource";
 import { BasicAuthenticator } from "../../middleware/BasicAuthenticator";
 import { Authenticator } from "../../middleware/Authenticator";
+import { JWTAuthenticator } from "../../middleware/JWTAuthenticator";
 
 export class SuperCuteDocuments extends SecuredResource {
   getPath(): string {
@@ -11,7 +12,7 @@ export class SuperCuteDocuments extends SecuredResource {
   }
 
   getAuthenticatingMiddleware(): Authenticator[] {
-    return [new BasicAuthenticator()];
+    return [new BasicAuthenticator(), new JWTAuthenticator()];
   }
 
   bind(app: Express): void {

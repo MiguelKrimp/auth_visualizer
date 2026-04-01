@@ -43,12 +43,11 @@ export class AuthenticationMiddleware {
 
   protected toUnauthorizedResponse(res: Response, msg: string): void {
     res.status(401);
-    this.authenticators.forEach((authenticator) => {
-      const header = authenticator.getAuthenticateHeader();
-      if (header) {
-        res.setHeader("WWW-Authenticate", header);
-      }
-    });
+
+    res.setHeader(
+      "WWW-Authenticate",
+      this.authenticators.map((a) => a.getAuthenticateHeader()).join(", "),
+    );
     res.send(msg);
   }
 }

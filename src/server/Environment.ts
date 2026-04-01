@@ -3,6 +3,8 @@ const EnvironmentVars = {
   demoUsername: process.env.DEMO_USER_USERNAME as string,
   demoPassword: process.env.DEMO_USER_PASSWORD as string,
 
+  jwtSecret: process.env.JWT_SECRET as string,
+
   // server
   port: Number(process.env.PORT),
 
