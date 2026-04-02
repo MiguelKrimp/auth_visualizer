@@ -1,9 +1,9 @@
 import { BasicAuthSteps } from '@common/authflow/steps/authenticators/BasicAuthSteps';
 import { Request, Response } from 'express';
 
-import { User, userRepository } from '../../database/entities/User';
-import { PasswordService } from '../../services/PasswordService';
-import { ISpySession } from '../spySession/SpySession';
+import { User, userRepository } from '../../../database/entities/User';
+import { PasswordService } from '../../../services/PasswordService';
+import { ISpySession } from '../../spySession/SpySession';
 import { Authenticator } from './Authenticator';
 
 export class BasicAuthenticator extends Authenticator<BasicAuthSteps> {

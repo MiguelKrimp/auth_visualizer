@@ -1,9 +1,9 @@
 import { Express } from 'express';
 import fs from 'fs';
 
-import { Authenticator } from '../../../middleware/Authenticator';
-import { BasicAuthenticator } from '../../../middleware/BasicAuthenticator';
-import { JWTAuthenticator } from '../../../middleware/JWTAuthenticator';
+import { Authenticator } from '../../../middleware/auth/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/auth/BasicAuthenticator';
+import { JWTAuthenticator } from '../../../middleware/auth/JWTAuthenticator';
 import { SecuredResource } from '../../SecuredResource';
 
 export class SuperCuteDocuments extends SecuredResource {

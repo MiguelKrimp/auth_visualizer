@@ -1,9 +1,9 @@
 import { JWTAuthSteps } from '@common/authflow/steps/authenticators/JwtAuthSteps';
 import { Request, Response } from 'express';
 
-import { User, userRepository } from '../../database/entities/User';
-import { JWTAudience, JWTService } from '../../services/JWTService';
-import { ISpySession } from '../spySession/SpySession';
+import { User, userRepository } from '../../../database/entities/User';
+import { JWTAudience, JWTService } from '../../../services/JWTService';
+import { ISpySession } from '../../spySession/SpySession';
 import { Authenticator } from './Authenticator';
 
 export class JWTAuthenticator extends Authenticator<JWTAuthSteps> {

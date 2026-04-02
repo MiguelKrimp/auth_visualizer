@@ -1,4 +1,4 @@
-import { Authenticator } from '@server/api/middleware/Authenticator';
+import { Authenticator } from '@server/api/middleware/auth/Authenticator';
 import { User, userRepository } from '@server/database/entities/User';
 import { PasswordService } from '@server/services/PasswordService';
 import { Express, Request, Response } from 'express';

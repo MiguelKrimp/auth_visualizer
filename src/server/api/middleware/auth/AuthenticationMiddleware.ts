@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { SpySessionBroker } from '../spySession/SpySessionBroker';
+import { SpySessionBroker } from '../../spySession/SpySessionBroker';
 import { Authenticator } from './Authenticator';
 
 export class AuthenticationMiddleware {

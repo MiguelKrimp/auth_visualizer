@@ -1,6 +1,6 @@
 import { Express } from 'express';
 
-import { Authenticator } from '../middleware/Authenticator';
+import { Authenticator } from '../middleware/auth/Authenticator';
 
 export abstract class SecuredResource {
   abstract getPath(): string;

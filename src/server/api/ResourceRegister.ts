@@ -1,7 +1,7 @@
 import { Express } from 'express';
 
 import { LoggingService } from '../services/LoggingService';
-import { AuthenticationMiddleware } from './middleware/AuthenticationMiddleware';
+import { AuthenticationMiddleware } from './middleware/auth/AuthenticationMiddleware';
 import { SuperCuteDocuments } from './ressources/documents/cuties/SuperCuteDocuments';
 import { JWTLoginResource } from './ressources/login/jwt/JWTLoginResource';
 import { SecuredResource } from './ressources/SecuredResource';
@@ -23,5 +23,5 @@ function register(app: Express, resource: SecuredResource): void {
   const authMiddleware = new AuthenticationMiddleware(resource.getAuthenticators());
   app.use(path, authMiddleware.handle.bind(authMiddleware));
   resource.bind(app);
-  LoggingService.info(`Registered resource at path ${path}`);
+  LoggingService.instance.info(`Registered resource at path ${path}`);
 }

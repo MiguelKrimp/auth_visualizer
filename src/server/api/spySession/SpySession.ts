@@ -28,7 +28,7 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
 
   onDisconnect(callback: () => void): void {
     this.socket.on('disconnect', () => {
-      LoggingService.info(`Spy session disconnected: ${this.id}`);
+      LoggingService.instance.info(`Spy session disconnected: ${this.id}`);
       callback();
     });
   }
@@ -49,7 +49,7 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
     }
     const stepName = String(name);
 
-    LoggingService.log(stepName, data);
+    LoggingService.instance.log(stepName, data);
 
     this.socket.emit('pause', { name: stepName, data });
 
@@ -63,7 +63,7 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
 
       timeoutHandler = setTimeout(
         () => {
-          LoggingService.warn(`Spy session ${this.id} timed out during step ${stepName}`);
+          LoggingService.instance.warn(`Spy session ${this.id} timed out during step ${stepName}`);
           resolve();
         },
         1000 * 60 * 5,

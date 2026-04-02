@@ -2,6 +2,8 @@ import 'reflect-metadata';
 
 import express from 'express';
 
+import { ErrorLoggingMiddleware } from './api/middleware/static/ErrorLogging';
+import { JSONBodyParser } from './api/middleware/static/JSONBodyParser';
 import { registerResources } from './api/ResourceRegister';
 import { SpySessionServer } from './api/spySession/SpySessionServer';
 import DataSource from './database/DataSource';
@@ -15,7 +17,7 @@ async function main(): Promise<void> {
   validateEnvironmentVars();
 
   await DataSource.initialize();
-  LoggingService.info('Database connection established');
+  LoggingService.instance.info('Database connection established');
 
   if (EnvironmentVars.development) {
     // Create a demo user if it doesn't exist
@@ -28,20 +30,23 @@ async function main(): Promise<void> {
         passwordHash: PasswordService.hashPassword(EnvironmentVars.demoPassword),
         role: Role.Admin,
       });
-      LoggingService.info(`Demo user '${EnvironmentVars.demoUsername}' created`);
+      LoggingService.instance.info(`Demo user '${EnvironmentVars.demoUsername}' created`);
     }
   }
 
   const app = express();
-  app.use(express.json());
+
+  app.use(JSONBodyParser);
+  app.use(ErrorLoggingMiddleware);
+
   registerResources(app);
 
   const server = app.listen(EnvironmentVars.port);
-  LoggingService.info(`Server started on port ${EnvironmentVars.port}`);
+  LoggingService.instance.info(`Server started on port ${EnvironmentVars.port}`);
 
   const spySessionServer = new SpySessionServer(server);
   spySessionServer.initialize();
-  LoggingService.info('Spy session websocket initialized');
+  LoggingService.instance.info('Spy session websocket initialized');
 }
 
 main();

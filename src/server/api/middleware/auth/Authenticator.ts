@@ -1,8 +1,8 @@
 import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
 import { Request, Response } from 'express';
 
-import { User } from '../../database/entities/User';
-import { ISpySession } from '../spySession/SpySession';
+import { User } from '../../../database/entities/User';
+import { ISpySession } from '../../spySession/SpySession';
 
 declare global {
   namespace Express {

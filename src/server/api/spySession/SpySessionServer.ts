@@ -14,7 +14,7 @@ export class SpySessionServer {
   constructor(server: Server) {
     this.ioServer = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(server, {});
     this.ioServer.engine.on('connection_error', (err) => {
-      LoggingService.error('WebSocket connection error:', err);
+      LoggingService.instance.error('WebSocket connection error:', err);
     });
   }
 
@@ -22,7 +22,7 @@ export class SpySessionServer {
     const spyNS = this.ioServer.of('/spy');
     spyNS.on('connection', (socket) => {
       const session = SpySessionBroker.getInstance().createSession(socket);
-      LoggingService.info(`New spy session connected: ${session.id}`);
+      LoggingService.instance.info(`New spy session connected: ${session.id}`);
     });
   }
 }
