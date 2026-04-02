@@ -1,6 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import { Authenticator } from "./Authenticator";
-import { User } from "../../database/entities/User";
+import { NextFunction, Request, Response } from 'express';
+
+import { SpySessionBroker } from '../spySession/SpySessionBroker';
+import { Authenticator } from './Authenticator';
 
 export class AuthenticationMiddleware {
   private authenticators: Authenticator[];
@@ -20,15 +21,16 @@ export class AuthenticationMiddleware {
     );
 
     if (!handlingAuthenticator) {
-      this.toUnauthorizedResponse(
-        res,
-        "No suitable authentication method found",
-      );
+      this.toUnauthorizedResponse(res, 'No suitable authentication method found');
       return;
     }
 
     try {
-      const principal = await handlingAuthenticator.authenticate(req, res);
+      const authenticateWithSpy = SpySessionBroker.getInstance().injectSpySession(
+        handlingAuthenticator.authenticate.bind(handlingAuthenticator),
+      );
+
+      const principal = await authenticateWithSpy(req, res);
       req.principal = principal;
 
       next();
@@ -36,7 +38,7 @@ export class AuthenticationMiddleware {
     } catch (err) {
       this.toUnauthorizedResponse(
         res,
-        err instanceof Error ? err.message : "Authentication failed",
+        err instanceof Error ? err.message : 'Authentication failed',
       );
     }
   }
@@ -45,8 +47,8 @@ export class AuthenticationMiddleware {
     res.status(401);
 
     res.setHeader(
-      "WWW-Authenticate",
-      this.authenticators.map((a) => a.getAuthenticateHeader()).join(", "),
+      'WWW-Authenticate',
+      this.authenticators.map((a) => a.getAuthenticateHeader()).join(', '),
     );
     res.send(msg);
   }

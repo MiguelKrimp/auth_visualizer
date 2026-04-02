@@ -7,7 +7,7 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "Node16",
+    "module": "nodenext",
     "target": "es2022",
     "types": ["node"],
     "lib": ["es2022"],
@@ -35,7 +35,7 @@
 
     // Recommended Options
     "strict": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "nodenext",
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",

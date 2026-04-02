@@ -4,18 +4,29 @@
   "description": "Authentication flow visualization tooling.",
   "main": "dist/server/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
     "dev": "node --env-file=development.env -r ts-node/register src/server/index.ts",
-    "start": "node dist/server/index.js"
+    "start": "node --env-file=production.env dist/server/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.37.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.2.0",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.46.1",
     "typescript": "^6.0.2"
   },
   "dependencies": {
@@ -24,6 +35,7 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "uuid": "^13.0.0"
   }
 }

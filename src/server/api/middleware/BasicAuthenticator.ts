@@ -1,46 +1,68 @@
-import { NextFunction, Response, Request } from "express";
-import { AuthenticationMiddleware } from "./AuthenticationMiddleware";
-import { User, userRepository } from "../../database/entities/User";
-import { PasswordService } from "../../services/PasswordService";
-import { Authenticator } from "./Authenticator";
+import { Request, Response } from 'express';
 
-export class BasicAuthenticator extends Authenticator {
+import { BasicAuthSteps } from '../../../common/authflow/steps/BasicAuthSteps';
+import { User, userRepository } from '../../database/entities/User';
+import { PasswordService } from '../../services/PasswordService';
+import { ISpySession } from '../spySession/SpySession';
+import { Authenticator } from './Authenticator';
+
+export class BasicAuthenticator extends Authenticator<BasicAuthSteps> {
   handlesAuthentication(req: Request): boolean {
-    const authHeader = req.headers["authorization"];
+    const authHeader = req.headers['authorization'];
     if (!authHeader) {
       return false;
     }
 
-    const [scheme] = authHeader.split(" ");
-    if (scheme !== "Basic") {
+    const [scheme] = authHeader.split(' ');
+    if (scheme !== 'Basic') {
       return false;
     }
     return true;
   }
 
-  async authenticate(req: Request, res: Response): Promise<User> {
-    const authHeader = req.headers["authorization"];
+  async authenticate(
+    req: Request,
+    _res: Response,
+    spy: ISpySession<BasicAuthSteps>,
+  ): Promise<User> {
+    const authHeader = req.headers['authorization'];
     if (!authHeader) {
-      throw new Error("Missing Authorization header");
+      throw new Error('Missing Authorization header');
     }
 
-    const [scheme, credentials] = authHeader.split(" ");
-    if (scheme !== "Basic" || !credentials) {
-      throw new Error("Invalid Authorization header format");
+    const [scheme, credentials] = authHeader.split(' ');
+    if (scheme !== 'Basic' || !credentials) {
+      throw new Error('Invalid Authorization header format');
     }
 
-    const decodedCredentials = Buffer.from(credentials, "base64").toString(
-      "utf-8",
-    );
-    const [username, password] = decodedCredentials.split(":");
+    const decodedCredentials = Buffer.from(credentials, 'base64').toString('utf-8');
+    const [username, password] = decodedCredentials.split(':');
     if (!username || !password) {
-      throw new Error("Invalid Authorization header format");
+      throw new Error('Invalid Authorization header format');
     }
+
+    await spy.step('Decode', {
+      header: authHeader,
+      decoded: decodedCredentials,
+    });
 
     const user = await userRepository().findOne({ where: { username } });
 
-    if (!user || !PasswordService.verifyPassword(password, user.passwordHash)) {
-      throw new Error("Invalid username or password");
+    if (!user) {
+      throw new Error('Invalid username or password');
+    }
+
+    await spy.step('UserLookup', { username, passwordHash: user.passwordHash });
+
+    const passwordValid = PasswordService.verifyPassword(password, user.passwordHash);
+
+    await spy.step('VerifyPassword', {
+      sentPassword: password,
+      valid: passwordValid,
+    });
+
+    if (!passwordValid) {
+      throw new Error('Invalid username or password');
     }
 
     return user;

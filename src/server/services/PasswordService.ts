@@ -1,8 +1,8 @@
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 
 export class PasswordService {
   static hashPassword(password: string): string {
-    return bcrypt.hashSync(password, 10);
+    return bcrypt.hashSync(password, 12);
   }
 
   static verifyPassword(password: string, hash: string): boolean {

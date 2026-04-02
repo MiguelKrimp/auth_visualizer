@@ -1,29 +1,29 @@
+/* eslint-disable no-console */
 export class LoggingService {
-  private static logInternal(
-    level: "log" | "info" | "warn" | "error",
-    msg: string,
-    err?: any,
-  ): void {
-    if (err) {
-      console[level](msg, err.stack || err);
-    } else {
-      console[level](msg);
-    }
+  private static logInternal(level: 'log' | 'info' | 'warn' | 'error', ...data: any[]): void {
+    console[level](...data);
+    // if (data instanceof Error) {
+    //   console[level](msg, data.stack || data);
+    // } else if (data) {
+    //   console[level](msg, data);
+    // } else {
+    //   console[level](msg);
+    // }
   }
 
-  static log(msg: string, err?: any): void {
-    this.logInternal("log", msg, err);
+  static log(...data: any[]): void {
+    this.logInternal('log', ...data);
   }
 
-  static info(msg: string, err?: any): void {
-    this.logInternal("info", msg, err);
+  static info(...data: any[]): void {
+    this.logInternal('info', ...data);
   }
 
-  static warn(msg: string, err?: any): void {
-    this.logInternal("warn", msg, err);
+  static warn(...data: any[]): void {
+    this.logInternal('warn', ...data);
   }
 
-  static error(msg: string, err?: any): void {
-    this.logInternal("error", msg, err);
+  static error(...data: any[]): void {
+    this.logInternal('error', ...data);
   }
 }

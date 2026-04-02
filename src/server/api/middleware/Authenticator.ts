@@ -1,5 +1,8 @@
-import { Request, Response } from "express";
-import { User } from "../../database/entities/User";
+import { Request, Response } from 'express';
+
+import { ValidAuthSteps } from '../../../common/authflow/steps/AuthSteps';
+import { User } from '../../database/entities/User';
+import { ISpySession } from '../spySession/SpySession';
 
 declare global {
   namespace Express {
@@ -9,10 +12,10 @@ declare global {
   }
 }
 
-export abstract class Authenticator {
+export abstract class Authenticator<T extends ValidAuthSteps = ValidAuthSteps> {
   abstract handlesAuthentication(req: Request): boolean;
 
-  abstract authenticate(req: Request, res: Response): Promise<User>;
+  abstract authenticate(req: Request, res: Response, spy: ISpySession<T>): Promise<User>;
 
   abstract getAuthenticateHeader(): string;
 }
