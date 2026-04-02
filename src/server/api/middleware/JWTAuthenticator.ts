@@ -1,6 +1,6 @@
+import { JWTAuthSteps } from '@common/authflow/steps/authenticators/JwtAuthSteps';
 import { Request, Response } from 'express';
 
-import { JWTAuthSteps } from '../../../common/authflow/steps/JwtAuthSteps';
 import { User, userRepository } from '../../database/entities/User';
 import { JWTAudience, JWTService } from '../../services/JWTService';
 import { ISpySession } from '../spySession/SpySession';

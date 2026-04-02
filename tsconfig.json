@@ -11,6 +11,11 @@
     "target": "es2022",
     "types": ["node"],
     "lib": ["es2022"],
+    "paths": {
+      "@common/*": ["./src/common/*"],
+      "@server/*": ["./src/server/*"],
+      "@client/*": ["./src/client/*"]
+    },
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

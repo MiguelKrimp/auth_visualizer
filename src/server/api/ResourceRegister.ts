@@ -2,12 +2,17 @@ import { Express } from 'express';
 
 import { LoggingService } from '../services/LoggingService';
 import { AuthenticationMiddleware } from './middleware/AuthenticationMiddleware';
-import { JWTLoginResource } from './ressources/authentication/JWTLoginResource';
-import { SuperCuteDocuments } from './ressources/documents/SuperCuteDocuments';
+import { SuperCuteDocuments } from './ressources/documents/cuties/SuperCuteDocuments';
+import { JWTLoginResource } from './ressources/login/jwt/JWTLoginResource';
 import { SecuredResource } from './ressources/SecuredResource';
+import { UserResource } from './ressources/users/UserResource';
 
 export function registerResources(app: Express): void {
-  const resources: SecuredResource[] = [new JWTLoginResource(), new SuperCuteDocuments()];
+  const resources: SecuredResource[] = [
+    new JWTLoginResource(),
+    new SuperCuteDocuments(),
+    new UserResource(),
+  ];
 
   resources.forEach((r) => register(app, r));
 }

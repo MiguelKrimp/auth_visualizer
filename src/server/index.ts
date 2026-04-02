@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import express from 'express';
 
 import { registerResources } from './api/ResourceRegister';
+import { SpySessionServer } from './api/spySession/SpySessionServer';
 import DataSource from './database/DataSource';
 import { Role } from './database/entities/Role';
 import { userRepository } from './database/entities/User';
@@ -32,9 +33,15 @@ async function main(): Promise<void> {
   }
 
   const app = express();
+  app.use(express.json());
   registerResources(app);
-  app.listen(EnvironmentVars.port);
+
+  const server = app.listen(EnvironmentVars.port);
   LoggingService.info(`Server started on port ${EnvironmentVars.port}`);
+
+  const spySessionServer = new SpySessionServer(server);
+  spySessionServer.initialize();
+  LoggingService.info('Spy session websocket initialized');
 }
 
 main();

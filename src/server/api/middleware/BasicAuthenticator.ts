@@ -1,6 +1,6 @@
+import { BasicAuthSteps } from '@common/authflow/steps/authenticators/BasicAuthSteps';
 import { Request, Response } from 'express';
 
-import { BasicAuthSteps } from '../../../common/authflow/steps/BasicAuthSteps';
 import { User, userRepository } from '../../database/entities/User';
 import { PasswordService } from '../../services/PasswordService';
 import { ISpySession } from '../spySession/SpySession';
@@ -41,7 +41,7 @@ export class BasicAuthenticator extends Authenticator<BasicAuthSteps> {
       throw new Error('Invalid Authorization header format');
     }
 
-    await spy.step('Decode', {
+    await spy.step('DecodeBasicHeader', {
       header: authHeader,
       decoded: decodedCredentials,
     });
@@ -52,7 +52,7 @@ export class BasicAuthenticator extends Authenticator<BasicAuthSteps> {
       throw new Error('Invalid username or password');
     }
 
-    await spy.step('UserLookup', { username, passwordHash: user.passwordHash });
+    await spy.step('LookupUserPassword', { username, passwordHash: user.passwordHash });
 
     const passwordValid = PasswordService.verifyPassword(password, user.passwordHash);
 

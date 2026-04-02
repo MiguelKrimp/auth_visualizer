@@ -1,7 +1,6 @@
 import { DataSource as ORMDatasource } from 'typeorm';
 
 import { EnvironmentVars } from '../Environment';
-import { User } from './entities/User';
 
 const DataSource = new ORMDatasource({
   type: 'postgres',
@@ -13,7 +12,7 @@ const DataSource = new ORMDatasource({
   synchronize: EnvironmentVars.development,
   dropSchema: EnvironmentVars.development,
   schema: EnvironmentVars.dbUsername,
-  entities: [User],
+  entities: [__dirname + '/entities/*.ts'],
 });
 
 export default DataSource;

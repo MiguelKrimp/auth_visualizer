@@ -1,8 +1,9 @@
+import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
+import { SPY_SESSION_HEADER } from '@common/SpySessionConstants';
 import { Request, Response } from 'express';
+import { Socket } from 'socket.io';
 
-import { ValidAuthSteps } from '../../../common/authflow/steps/AuthSteps';
-import { SPY_SESSION_HEADER } from '../../../common/SpySessionConstants';
-import { ISpySession, SpySession } from './SpySession';
+import { ISpySession, NOOPSpySession, SpySession } from './SpySession';
 
 export class SpySessionBroker {
   private static instance: SpySessionBroker;
@@ -17,17 +18,21 @@ export class SpySessionBroker {
   private sessions: Map<string, ISpySession> = new Map();
   private constructor() {}
 
-  createSession(): ISpySession {
-    const session = new SpySession();
+  createSession(socket: Socket): SpySession<ValidAuthSteps> {
+    const session = new SpySession(socket);
     this.sessions.set(session.id, session);
+
+    session.onDisconnect(() => {
+      this.sessions.delete(session.id);
+    });
+
     return session;
   }
 
   getSession(id?: string): ISpySession {
     const session = id ? this.sessions.get(id) : undefined;
     if (!session) {
-      // return new NOOPSpySession();
-      return new SpySession();
+      return new NOOPSpySession();
     }
 
     return session;

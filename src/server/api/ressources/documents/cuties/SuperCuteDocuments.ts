@@ -1,14 +1,14 @@
 import { Express } from 'express';
 import fs from 'fs';
 
-import { Authenticator } from '../../middleware/Authenticator';
-import { BasicAuthenticator } from '../../middleware/BasicAuthenticator';
-import { JWTAuthenticator } from '../../middleware/JWTAuthenticator';
-import { SecuredResource } from '../SecuredResource';
+import { Authenticator } from '../../../middleware/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/BasicAuthenticator';
+import { JWTAuthenticator } from '../../../middleware/JWTAuthenticator';
+import { SecuredResource } from '../../SecuredResource';
 
 export class SuperCuteDocuments extends SecuredResource {
   getPath(): string {
-    return '/super-cute-documents';
+    return '/documents/cuties';
   }
 
   getAuthenticators(): Authenticator[] {
