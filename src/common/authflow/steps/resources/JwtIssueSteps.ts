@@ -1,4 +1,4 @@
-import { ValidAuthSteps } from './AuthSteps';
+import { ValidAuthSteps } from '../AuthSteps';
 
 export type JwtIssueSteps = ValidAuthSteps<{
   BuildClaims: {
@@ -14,3 +14,8 @@ export type JwtIssueSteps = ValidAuthSteps<{
     };
   };
 }>;
+
+export const JwtIssueStepKeys = [
+  'BuildClaims',
+  'CreateToken',
+] as const satisfies (keyof JwtIssueSteps)[];

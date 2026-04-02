@@ -1,4 +1,4 @@
-import { ValidAuthSteps } from './AuthSteps';
+import { ValidAuthSteps } from '../AuthSteps';
 
 export type JWTAuthSteps = ValidAuthSteps<{
   ExtractToken: {
@@ -28,3 +28,10 @@ export type JWTAuthSteps = ValidAuthSteps<{
     };
   };
 }>;
+
+export const JWTAuthStepKeys = [
+  'ExtractToken',
+  'DecodeToken',
+  'VerifyToken',
+  'LookupUser',
+] as const satisfies (keyof JWTAuthSteps)[];
