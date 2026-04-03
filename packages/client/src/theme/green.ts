@@ -14,7 +14,7 @@ export const greenTheme = defineConfig({
         surface: { value: '#161b22' },
         surfaceAlt: { value: '#1f2631' },
         panel: { value: '#121821' },
-        line: { value: '#2a3240' },
+        line: { value: '#21e20c35' },
       },
       fonts: {
         mono: { value: 'JetBrains Mono, monospace, system-ui' },
