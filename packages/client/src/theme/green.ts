@@ -10,7 +10,7 @@ export const greenTheme = defineConfig({
         accent2: { value: '#fd971f' },
         text: { value: '#e6edf3' },
         muted: { value: '#9aa5b1' },
-        background: { value: '#0f1115' },
+        background: { value: '#16191f' },
         surface: { value: '#161b22' },
         surfaceAlt: { value: '#1f2631' },
         panel: { value: '#121821' },

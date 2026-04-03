@@ -8,6 +8,9 @@ const flows = [
     label: 'Simple JWT',
   },
   {
+    label: '2FA',
+  },
+  {
     label: 'OIDC',
   },
   {
