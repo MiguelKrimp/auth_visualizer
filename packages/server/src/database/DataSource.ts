@@ -12,7 +12,7 @@ const DataSource = new ORMDatasource({
   synchronize: EnvironmentVars.development,
   dropSchema: EnvironmentVars.development,
   schema: EnvironmentVars.dbUsername,
-  entities: [__dirname + '/entities/*.ts'],
+  entities: [__dirname + '/entities/*'],
 });
 
 export default DataSource;

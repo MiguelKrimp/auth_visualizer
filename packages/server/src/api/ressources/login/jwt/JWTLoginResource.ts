@@ -1,11 +1,11 @@
-import { JwtIssueSteps } from '@common/authflow/steps/resources/JwtIssueSteps';
+import { JwtIssueSteps } from '@auth-visualizer/common/authflow/steps/resources/JwtIssueSteps';
 import { Express } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
-import { JWTAudience, JWTService } from '../../../services/JWTService';
-import { Authenticator } from '../../middleware/auth/Authenticator';
-import { BasicAuthenticator } from '../../middleware/auth/BasicAuthenticator';
-import { InteractiveResource } from '../InteractiveResource';
+import { JWTAudience, JWTService } from '../../../../services/JWTService';
+import { Authenticator } from '../../../middleware/auth/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/auth/BasicAuthenticator';
+import { InteractiveResource } from '../../InteractiveResource';
 
 export class JWTLoginResource extends InteractiveResource<JwtIssueSteps> {
   private static TTL = 5 * 60; // 5 minutes;

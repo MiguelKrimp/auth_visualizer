@@ -1,0 +1,16 @@
+{
+  "name": "@auth-visualizer/server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "dev": "node --watch --env-file=../../development.env -r ts-node/register src/index.ts",
+    "start": "node --env-file=../../production.env dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "dependencies": {
+    "@auth-visualizer/common": "1.0.0"
+  }
+}

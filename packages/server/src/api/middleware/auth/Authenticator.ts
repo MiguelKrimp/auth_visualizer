@@ -1,4 +1,4 @@
-import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
+import { ValidAuthSteps } from '@auth-visualizer/common/authflow/steps/AuthSteps';
 import { Request, Response } from 'express';
 
 import { User } from '../../../database/entities/User';

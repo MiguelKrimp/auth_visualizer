@@ -1,6 +1,9 @@
 import { Server } from 'node:http';
 
-import { ClientToServerEvents, ServerToClientEvents } from '@common/SpySessionSocketEvents';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '@auth-visualizer/common/SpySessionSocketEvents';
 import { Server as SocketIOServer } from 'socket.io';
 
 import { LoggingService } from '../../services/LoggingService';
@@ -24,5 +27,6 @@ export class SpySessionServer {
       const session = SpySessionBroker.getInstance().createSession(socket);
       LoggingService.instance.info(`New spy session connected: ${session.id}`);
     });
+    LoggingService.instance.info('Spy session websocket initialized on /spy');
   }
 }

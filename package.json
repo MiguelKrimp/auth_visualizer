@@ -2,14 +2,19 @@
   "name": "auth_visualizer",
   "version": "1.0.0",
   "description": "Authentication flow visualization tooling.",
-  "main": "dist/server/index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.json",
-    "dev": "node --env-file=development.env -r ts-node/register -r tsconfig-paths/register src/server/index.ts",
-    "start": "node --env-file=production.env dist/server/index.js",
-    "dev:wstest": "ts-node src/client/WSTest.ts",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "build": "npm run build -w @auth-visualizer/common && npm run build -w @auth-visualizer/server && npm run build -w @auth-visualizer/client",
+    "dev": "npm run build -w @auth-visualizer/common && npm run dev:server",
+    "dev:server": "npm run dev -w @auth-visualizer/server",
+    "dev:client": "npm run dev -w @auth-visualizer/client",
+    "start": "npm run build -w @auth-visualizer/common && npm run start -w @auth-visualizer/server",
+    "dev:wstest": "npm run dev:client",
+    "lint": "npm run lint -ws --if-present",
+    "lint:fix": "npm run lint:fix -ws --if-present",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
@@ -26,8 +31,8 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.2.0",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.46.1"
   },

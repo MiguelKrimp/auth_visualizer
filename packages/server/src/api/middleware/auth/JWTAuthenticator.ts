@@ -1,4 +1,4 @@
-import { JWTAuthSteps } from '@common/authflow/steps/authenticators/JwtAuthSteps';
+import { JWTAuthSteps } from '@auth-visualizer/common/authflow/steps/authenticators/JwtAuthSteps';
 import { Request, Response } from 'express';
 
 import { User, userRepository } from '../../../database/entities/User';

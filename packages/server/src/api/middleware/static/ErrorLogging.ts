@@ -1,5 +1,6 @@
-import { LoggingService } from '@server/services/LoggingService';
 import { NextFunction, Request, Response } from 'express';
+
+import { LoggingService } from '../../../services/LoggingService';
 
 function logError(error: Error, req: Request, res: Response, next: NextFunction): void {
   LoggingService.instance.error(

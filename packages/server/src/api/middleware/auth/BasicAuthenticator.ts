@@ -1,4 +1,4 @@
-import { BasicAuthSteps } from '@common/authflow/steps/authenticators/BasicAuthSteps';
+import { BasicAuthSteps } from '@auth-visualizer/common/authflow/steps/authenticators/BasicAuthSteps';
 import { Request, Response } from 'express';
 
 import { User, userRepository } from '../../../database/entities/User';

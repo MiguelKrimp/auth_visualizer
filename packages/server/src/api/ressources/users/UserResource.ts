@@ -1,8 +1,8 @@
-import { Authenticator } from '@server/api/middleware/auth/Authenticator';
-import { User, userRepository } from '@server/database/entities/User';
-import { PasswordService } from '@server/services/PasswordService';
 import { Express, Request, Response } from 'express';
 
+import { User, userRepository } from '../../../database/entities/User';
+import { PasswordService } from '../../../services/PasswordService';
+import { Authenticator } from '../../middleware/auth/Authenticator';
 import { SecuredResource } from '../SecuredResource';
 
 export class UserResource extends SecuredResource {
@@ -16,8 +16,6 @@ export class UserResource extends SecuredResource {
 
   bind(app: Express): void {
     app.post(this.getPath(), async (req: Request, res: Response) => {
-      console.log(req.body);
-
       const { username, password } = req.body;
       if (!username || !password) {
         res.status(400).send('Username and password are required');

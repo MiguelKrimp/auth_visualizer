@@ -1,6 +1,9 @@
-import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
-import { SpySessionConfig } from '@common/SpySessionConfig';
-import { ClientToServerEvents, ServerToClientEvents } from '@common/SpySessionSocketEvents';
+import { ValidAuthSteps } from '@auth-visualizer/common/authflow/steps/AuthSteps';
+import { SpySessionConfig } from '@auth-visualizer/common/SpySessionConfig';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '@auth-visualizer/common/SpySessionSocketEvents';
 import { Socket } from 'socket.io';
 import { NIL, v4 as uuidV4 } from 'uuid';
 

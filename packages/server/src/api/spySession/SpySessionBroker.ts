@@ -1,5 +1,5 @@
-import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
-import { SPY_SESSION_HEADER } from '@common/SpySessionConstants';
+import { ValidAuthSteps } from '@auth-visualizer/common/authflow/steps/AuthSteps';
+import { SPY_SESSION_HEADER } from '@auth-visualizer/common/SpySessionConstants';
 import { Request, Response } from 'express';
 import { Socket } from 'socket.io';
 

@@ -1,0 +1,16 @@
+{
+  "name": "@auth-visualizer/client",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/WSTest.js",
+  "types": "dist/WSTest.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "dev": "ts-node src/WSTest.ts",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "dependencies": {
+    "@auth-visualizer/common": "1.0.0"
+  }
+}

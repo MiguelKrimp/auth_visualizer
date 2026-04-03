@@ -37,16 +37,16 @@ async function main(): Promise<void> {
   const app = express();
 
   app.use(JSONBodyParser);
-  app.use(ErrorLoggingMiddleware);
 
   registerResources(app);
+
+  app.use(ErrorLoggingMiddleware);
 
   const server = app.listen(EnvironmentVars.port);
   LoggingService.instance.info(`Server started on port ${EnvironmentVars.port}`);
 
   const spySessionServer = new SpySessionServer(server);
   spySessionServer.initialize();
-  LoggingService.instance.info('Spy session websocket initialized');
 }
 
 main();

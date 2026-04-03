@@ -1,4 +1,4 @@
-import { ValidAuthSteps } from '@common/authflow/steps/AuthSteps';
+import { ValidAuthSteps } from '@auth-visualizer/common/authflow/steps/AuthSteps';
 
 import { Handler, HandlerWithSpySession, SpySessionBroker } from '../spySession/SpySessionBroker';
 import { SecuredResource } from './SecuredResource';
