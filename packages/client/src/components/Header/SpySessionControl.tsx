@@ -33,7 +33,7 @@ export function SpySessionControl() {
     if (socket) {
       return 'Socket ID: ' + socket.sessionId;
     } else if (error) {
-      return `${error.name} ${error.message}`;
+      return `${error.name}: ${error.message}`;
     }
   }, [socket, error]);
 

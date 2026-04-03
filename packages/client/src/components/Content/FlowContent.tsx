@@ -41,7 +41,7 @@ export function FlowContent() {
       <Separator borderColor="line" mb={4} />
 
       <Tabs.Root variant="outline" defaultValue={flows[0]?.label} fitted>
-        <Tabs.List bg="surface" borderColor="line" p={1} borderRadius="lg">
+        <Tabs.List bg="surface" borderColor="line" p={1} borderRadius="lg" gapX="1">
           {flows.map((flow) => (
             <Tabs.Trigger
               key={flow.label}
