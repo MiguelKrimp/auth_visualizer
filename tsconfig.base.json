@@ -12,7 +12,6 @@
     "strict": true,
     "moduleResolution": "nodenext",
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "esModuleInterop": true,
