@@ -11,13 +11,13 @@ import {
 } from '@chakra-ui/react';
 import type { CSSProperties, PointerEvent } from 'react';
 import { Header } from './components/Header/Header';
-import { FlowContent } from './components/Content/FlowContent';
+import { AuthSelection } from './components/Content/AuthSelection';
 import { Footer } from './components/Footer/Footer';
 
 function App() {
   return (
     <Box
-      minH="100dvh"
+      h="100dvh"
       bg="background"
       color="text"
       display="flex"
@@ -36,11 +36,13 @@ function App() {
         display="flex"
         flexDir="column"
         flex="1"
+        minH="0"
+        overflow="hidden"
         position="relative"
         zIndex={1}
       >
         <Header />
-        <FlowContent />
+        <AuthSelection />
         <Footer />
       </Container>
     </Box>

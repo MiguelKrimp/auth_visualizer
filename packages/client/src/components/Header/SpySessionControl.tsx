@@ -47,6 +47,7 @@ export function SpySessionControl() {
         borderRadius="full"
         fontFamily="mono"
         letterSpacing="0.04em"
+        color="background"
       >
         Spy Session: {connectionStatus}
       </Badge>

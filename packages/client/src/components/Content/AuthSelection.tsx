@@ -1,4 +1,7 @@
 import { Box, HStack, Heading, Separator, Tabs, Text } from '@chakra-ui/react';
+import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { AuthflowContent } from './AuthflowContent';
 
 const flows = [
   {
@@ -18,12 +21,16 @@ const flows = [
   },
 ];
 
-export function FlowContent() {
+export function AuthSelection() {
   return (
     <Box
       as="main"
       mt={{ base: 5, md: 6 }}
       flex="1"
+      minH="0"
+      display="flex"
+      flexDir="column"
+      overflow="hidden"
       borderWidth="1px"
       borderColor="line"
       bg="panel"
@@ -43,8 +50,18 @@ export function FlowContent() {
 
       <Separator borderColor="line" mb={4} />
 
-      <Tabs.Root variant="outline" defaultValue={flows[0]?.label} fitted>
-        <Tabs.List bg="surface" borderColor="line" p={1} borderRadius="lg" gapX="1">
+      <Tabs.Root
+        variant="outline"
+        defaultValue={flows[0]?.label}
+        fitted
+        display="flex"
+        flexDir="column"
+        flex="1 1 100%"
+        minH="0"
+        overflow="hidden"
+        lazyMount
+      >
+        <Tabs.List bg="surface" p={0} borderRadius="lg" gapX="1">
           {flows.map((flow) => (
             <Tabs.Trigger
               key={flow.label}
@@ -62,6 +79,18 @@ export function FlowContent() {
             </Tabs.Trigger>
           ))}
         </Tabs.List>
+        {flows.map((flow) => (
+          <Tabs.Content
+            value={flow.label}
+            flex="1 1 100%"
+            minH="0"
+            pt={4}
+            display="flex"
+            overflow="hidden"
+          >
+            <AuthflowContent flow={flow} />
+          </Tabs.Content>
+        ))}
       </Tabs.Root>
     </Box>
   );
