@@ -8,11 +8,10 @@
   ],
   "scripts": {
     "build": "npm run build -w @auth-visualizer/common && npm run build -w @auth-visualizer/server && npm run build -w @auth-visualizer/client",
-    "dev": "npm run build -w @auth-visualizer/common && npm run dev:server",
+    "dev": "npm run dev -w @auth-visualizer/common && npm run dev:server && npm run dev:client",
     "dev:server": "npm run dev -w @auth-visualizer/server",
     "dev:client": "npm run dev -w @auth-visualizer/client",
     "start": "npm run build -w @auth-visualizer/common && npm run start -w @auth-visualizer/server",
-    "dev:wstest": "npm run dev:client",
     "lint": "npm run lint -ws --if-present",
     "lint:fix": "npm run lint:fix -ws --if-present",
     "format": "prettier . --write",
@@ -23,8 +22,6 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.37.0",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
@@ -32,19 +29,7 @@
     "eslint-plugin-unused-imports": "^4.2.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.46.1"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0",
-    "reflect-metadata": "^0.2.2",
-    "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3",
-    "typeorm": "^0.3.28",
-    "uuid": "^13.0.0"
   }
 }

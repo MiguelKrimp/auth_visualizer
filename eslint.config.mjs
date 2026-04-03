@@ -26,7 +26,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,cjs,mjs,ts,cts,mts}'],
+    files: ['**/src/**/*.{js,cjs,mjs,ts,cts,mts}'],
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
