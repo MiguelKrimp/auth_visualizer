@@ -1,23 +1,53 @@
 import { Box, HStack, Heading, Separator, Tabs, Text } from '@chakra-ui/react';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AuthflowContent } from './AuthflowContent';
+import { Tab } from './Tab';
+import type { AuthFlow } from '../common/AuthFlow';
 
-const flows = [
+const flows: AuthFlow[] = [
   {
-    label: 'Basic',
+    id: 'basic-auth',
+    label: 'Basic Auth',
+    description:
+      'HTTP Basic authentication sends a username and password with each request using the Authorization header. It is simple to implement and widely supported across clients and servers. Because credentials are repeatedly transmitted, it should only be used over HTTPS.',
+    infoLink: 'https://www.rfc-editor.org/rfc/rfc7617',
+    disabled: false,
+    steps: [],
   },
   {
-    label: 'Simple JWT',
+    id: 'jwt',
+    label: 'JWT',
+    description:
+      'JSON Web Tokens are compact, signed tokens that carry claims about a user or session. They are commonly used for stateless authentication because servers can validate signatures without storing per-session state. Token lifetime, signing algorithm choice, and secure storage all strongly affect security.',
+    infoLink: 'https://www.rfc-editor.org/rfc/rfc7519',
+    disabled: false,
+    steps: [],
   },
   {
-    label: '2FA',
+    id: 'totp-2fa',
+    label: '2FA (TOTP)',
+    description:
+      'Time-based one-time passwords add a second authentication factor beyond a password. A shared secret and current time are used to generate short-lived numeric codes in an authenticator app. This approach significantly improves account security, though phishing-resistant methods can provide stronger protection.',
+    infoLink: 'https://www.rfc-editor.org/rfc/rfc6238',
+    disabled: true,
+    steps: [],
   },
   {
+    id: 'oidc',
     label: 'OIDC',
+    description:
+      'OpenID Connect is an identity layer built on top of OAuth 2.0. It standardizes authentication flows and defines tokens like the ID Token for conveying user identity claims. OIDC is commonly used for single sign-on and delegation to trusted identity providers.',
+    infoLink: 'https://openid.net/specs/openid-connect-core-1_0.html',
+    disabled: true,
+    steps: [],
   },
   {
+    id: 'webauthn',
     label: 'WebAuthn',
+    description:
+      'WebAuthn enables strong, phishing-resistant authentication using public-key cryptography. Credentials are created and stored by authenticators such as security keys, platform biometrics, or passkeys. Since no shared secret password is sent to the server, it reduces credential theft and replay risks.',
+    infoLink: 'https://www.w3.org/TR/webauthn-3/',
+    disabled: true,
+    steps: [],
   },
 ];
 
@@ -65,6 +95,7 @@ export function AuthSelection() {
           {flows.map((flow) => (
             <Tabs.Trigger
               key={flow.label}
+              disabled={flow.disabled}
               value={flow.label}
               color="text"
               _hover={{ bg: 'surfaceAlt', color: 'bright' }}
@@ -75,12 +106,13 @@ export function AuthSelection() {
                 boxShadow: 'inset 0 -2px 0 #66d9ef',
               }}
             >
-              {flow.label}
+              <Tab key={flow.id} flow={flow} />
             </Tabs.Trigger>
           ))}
         </Tabs.List>
         {flows.map((flow) => (
           <Tabs.Content
+            key={flow.id}
             value={flow.label}
             flex="1 1 100%"
             minH="0"
@@ -88,7 +120,7 @@ export function AuthSelection() {
             display="flex"
             overflow="hidden"
           >
-            <AuthflowContent flow={flow} />
+            <AuthflowContent key={flow.id} flow={flow} />
           </Tabs.Content>
         ))}
       </Tabs.Root>

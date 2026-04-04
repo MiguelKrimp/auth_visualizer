@@ -1,10 +1,9 @@
 import { Box } from '@chakra-ui/react';
 import { useRef, useState, useLayoutEffect } from 'react';
+import type { AuthFlow } from '../common/AuthFlow';
 
 type AuthflowContentProps = {
-  flow: {
-    label: string;
-  };
+  flow: AuthFlow;
 };
 
 const leftX = '30%';
