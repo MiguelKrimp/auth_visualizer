@@ -3,9 +3,11 @@ import {
   type ServerToClientEvents,
   SpySessionConfig,
 } from '@auth-visualizer/common';
+import type { StepIDs } from '@auth-visualizer/common/authflow/steps/StepIDs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
+import { StepLabels } from '../../util/StepLabels';
 import { HOST } from '../host';
 
 export type SpyingSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -16,7 +18,7 @@ export class SpySession {
 
   private config = new SpySessionConfig();
 
-  private currentStep?: string | undefined;
+  private currentStep?: StepIDs | undefined;
 
   private static instance?: Promise<SpySession>;
   static async get(): Promise<SpySession> {
@@ -50,10 +52,10 @@ export class SpySession {
     this.websocket.emit('config', this.config);
   }
 
-  onPause(infoCallback: (name: string, info: any) => void): void {
+  onPause(infoCallback: (stepLabel: string, info: any) => void): void {
     this.websocket.on('pause', ({ name, data }) => {
       this.currentStep = name;
-      infoCallback(name, data);
+      infoCallback(StepLabels[name], data);
     });
   }
 
@@ -62,6 +64,11 @@ export class SpySession {
       this.websocket.emit('resume', this.currentStep);
       this.currentStep = undefined;
     }
+  }
+
+  abort() {
+    this.websocket.emit('abort');
+    this.currentStep = undefined;
   }
 
   disconnect() {

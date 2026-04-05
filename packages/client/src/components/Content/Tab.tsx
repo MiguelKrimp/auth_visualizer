@@ -1,6 +1,7 @@
 import { LuInfo } from 'react-icons/lu';
+
+import type { AuthFlow } from '../../authflow/AuthFlow';
 import { Tooltip } from '../common/Tooltip';
-import type { AuthFlow } from '../common/AuthFlow';
 
 type AuthflowContentProps = {
   flow: AuthFlow;

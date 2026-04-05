@@ -1,7 +1,7 @@
 import { Express } from 'express';
 
 import { LoggingService } from '../services/LoggingService';
-import { AuthenticationMiddleware } from './middleware/auth/AuthenticationMiddleware';
+import { AuthenticationMiddleware } from './middleware/authentication/AuthenticationMiddleware';
 import { SuperCuteDocuments } from './ressources/documents/cuties/SuperCuteDocuments';
 import { JWTLoginResource } from './ressources/login/jwt/JWTLoginResource';
 import { SecuredResource } from './ressources/SecuredResource';

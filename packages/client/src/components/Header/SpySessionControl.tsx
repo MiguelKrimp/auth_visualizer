@@ -1,6 +1,7 @@
 import { Badge } from '@chakra-ui/react';
-import { SpySession } from '../../api/spySession/SpySession';
 import { useEffect, useMemo, useState } from 'react';
+
+import { SpySession } from '../../api/spySession/SpySession';
 import { Tooltip } from '../common/Tooltip';
 
 export function SpySessionControl() {

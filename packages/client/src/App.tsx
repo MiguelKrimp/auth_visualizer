@@ -1,18 +1,12 @@
-import {
-  Badge,
-  Box,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Separator,
-  Tabs,
-  Text,
-} from '@chakra-ui/react';
-import type { CSSProperties, PointerEvent } from 'react';
-import { Header } from './components/Header/Header';
+import { Box, Container } from '@chakra-ui/react';
+
 import { AuthSelection } from './components/Content/AuthSelection';
 import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header/Header';
+import {
+  AuthFlowExecutionContext,
+  ExecutionContext,
+} from './components/common/AuthFlowExecutionContext';
 
 function App() {
   return (
@@ -42,8 +36,10 @@ function App() {
         zIndex={1}
       >
         <Header />
-        <AuthSelection />
-        <Footer />
+        <AuthFlowExecutionContext.Provider value={new ExecutionContext()}>
+          <AuthSelection />
+          <Footer />
+        </AuthFlowExecutionContext.Provider>
       </Container>
     </Box>
   );

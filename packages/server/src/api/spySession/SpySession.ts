@@ -1,4 +1,5 @@
 import { ValidAuthSteps } from '@auth-visualizer/common/authflow/steps/AuthSteps';
+import { StepIDs } from '@auth-visualizer/common/authflow/steps/StepIDs';
 import { SpySessionConfig } from '@auth-visualizer/common/SpySessionConfig';
 import {
   ClientToServerEvents,
@@ -50,18 +51,22 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
     if (!this.config.doSpy) {
       return;
     }
-    const stepName = String(name);
+    const stepName = String(name) as StepIDs;
 
     LoggingService.instance.log(stepName, data);
 
     this.socket.emit('pause', { name: stepName, data });
 
     let timeoutHandler: NodeJS.Timeout;
-    return new Promise<void>((resolve) => {
-      this.socket.once('resume', (name: string) => {
+    return new Promise<void>((resolve, reject) => {
+      this.socket.once('resume', (name: StepIDs) => {
         if (name === stepName) {
           resolve();
         }
+      });
+
+      this.socket.once('abort', () => {
+        reject(new Error(`Flow aborted by client`));
       });
 
       timeoutHandler = setTimeout(
@@ -73,6 +78,8 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
       );
     }).finally(() => {
       clearTimeout(timeoutHandler);
+      this.socket.removeAllListeners('abort');
+      this.socket.removeAllListeners('resume');
     });
   }
 }

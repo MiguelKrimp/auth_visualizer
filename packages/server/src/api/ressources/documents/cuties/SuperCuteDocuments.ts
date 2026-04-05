@@ -1,9 +1,10 @@
 import { Express } from 'express';
-import fs from 'fs';
 
-import { Authenticator } from '../../../middleware/auth/Authenticator';
-import { BasicAuthenticator } from '../../../middleware/auth/BasicAuthenticator';
-import { JWTAuthenticator } from '../../../middleware/auth/JWTAuthenticator';
+import { catPicsRepository } from '../../../../database/entities/CatPics';
+import { Authenticator } from '../../../middleware/authentication/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/authentication/BasicAuthenticator';
+import { JWTAuthenticator } from '../../../middleware/authentication/JWTAuthenticator';
+import { assertAdmin } from '../../../middleware/authorization/assertAdmin';
 import { SecuredResource } from '../../SecuredResource';
 
 export class SuperCuteDocuments extends SecuredResource {
@@ -16,9 +17,31 @@ export class SuperCuteDocuments extends SecuredResource {
   }
 
   bind(app: Express): void {
-    app.get(this.getPath(), (req, res) => {
-      const catHtml = fs.readFileSync('src/server/api/ressources/documents/cat.html', 'utf-8');
-      res.status(200).send(catHtml);
+    app.get(this.getPath(), async (req, res) => {
+      const catPic = await catPicsRepository()
+        .createQueryBuilder('users')
+        .orderBy('RANDOM()')
+        .getOne();
+
+      if (!catPic) {
+        // AI is responsible for the quality of this error message, not me.
+        return res.status(404).json({ error: "It's a cat-astrophe! No cat pics found." });
+      }
+
+      res.status(200).send(catPic.dataUrl);
+    });
+
+    app.post(this.getPath(), assertAdmin, async (req, res) => {
+      const { dataUrl } = req.body;
+
+      if (!dataUrl) {
+        return res.status(400).json({ error: 'Missing dataUrl' });
+      }
+
+      const catPic = catPicsRepository().create({ dataUrl });
+      await catPicsRepository().save(catPic);
+
+      res.status(201).json(catPic);
     });
   }
 }

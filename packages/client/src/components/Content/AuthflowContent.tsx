@@ -1,35 +1,44 @@
 import { Box } from '@chakra-ui/react';
-import { useRef, useState, useLayoutEffect } from 'react';
-import type { AuthFlow } from '../common/AuthFlow';
+import { useContext, useLayoutEffect, useMemo, useRef, useState, type JSX } from 'react';
+
+import type { AuthFlow } from '../../authflow/AuthFlow';
+import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
 
 type AuthflowContentProps = {
   flow: AuthFlow;
 };
 
-const leftX = '30%';
-const rightX = '70%';
-
 export function AuthflowContent({ flow }: AuthflowContentProps) {
   const contentRef = useRef<SVGGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  const [svgContent, setSvgContent] = useState<JSX.Element | null>(null);
+
+  const executionContext = useContext(AuthFlowExecutionContext);
+  const executor = useMemo(() => {
+    if (!flow.executorFactory) {
+      return null;
+    }
+
+    const exec = flow.executorFactory(setSvgContent);
+    executionContext.executor = exec;
+    return exec;
+  }, [flow]);
+
   const [svgSize, setSvgSize] = useState({ width: 800, height: 100 });
   useLayoutEffect(() => {
-    console.log(contentRef.current, containerRef.current);
     if (!contentRef.current || !containerRef.current) {
       return;
     }
 
     const bounds = contentRef.current.getBBox();
 
-    console.log(bounds);
-
     const padding = 24;
     const nextWidth = containerRef.current.clientWidth - padding;
     const nextHeight = Math.max(100, Math.ceil(bounds.y + bounds.height + padding));
 
     setSvgSize({ width: nextWidth, height: nextHeight });
-  }, []);
+  }, [svgContent]);
 
   return (
     <Box
@@ -53,14 +62,7 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
           minWidth: '100%',
         }}
       >
-        <g ref={contentRef}>
-          <g>
-            <image x={`calc(${leftX} - 20px)`} y={5} height={40} width={40} href="./desktop.svg" />
-            <line stroke="darkgreen" strokeWidth={5} x1={leftX} y1={50} x2={leftX} y2="99%" />
-            <image x={`calc(${rightX} - 20px)`} y={5} height={40} width={40} href="./server.svg" />
-            <line stroke="orange" strokeWidth={5} x1={rightX} y1={50} x2={rightX} y2="99%" />
-          </g>
-        </g>
+        <g ref={contentRef}>{svgContent}</g>
       </svg>
     </Box>
   );

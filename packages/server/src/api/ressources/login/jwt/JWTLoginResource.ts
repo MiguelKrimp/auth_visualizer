@@ -3,8 +3,8 @@ import { Express } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
 import { JWTAudience, JWTService } from '../../../../services/JWTService';
-import { Authenticator } from '../../../middleware/auth/Authenticator';
-import { BasicAuthenticator } from '../../../middleware/auth/BasicAuthenticator';
+import { Authenticator } from '../../../middleware/authentication/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/authentication/BasicAuthenticator';
 import { InteractiveResource } from '../../InteractiveResource';
 
 export class JWTLoginResource extends InteractiveResource<JwtIssueSteps> {

@@ -1,4 +1,5 @@
-import { Flex, Box, Heading, Badge, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
+
 import { SpySessionControl } from './SpySessionControl';
 
 export function Header() {

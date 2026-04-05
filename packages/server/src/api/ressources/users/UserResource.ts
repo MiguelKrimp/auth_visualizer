@@ -2,7 +2,7 @@ import { Express, Request, Response } from 'express';
 
 import { User, userRepository } from '../../../database/entities/User';
 import { PasswordService } from '../../../services/PasswordService';
-import { Authenticator } from '../../middleware/auth/Authenticator';
+import { Authenticator } from '../../middleware/authentication/Authenticator';
 import { SecuredResource } from '../SecuredResource';
 
 export class UserResource extends SecuredResource {
