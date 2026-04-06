@@ -14,14 +14,20 @@ export class BasicAuthExecutor extends AbstractFlowExecutor {
   async execute(): Promise<void> {
     this.renderCallback(this.renderer.renderInitial());
 
-    // TODO show popup to ask for username and password
+    const { username, password } = await new Promise<{ username: string; password: string }>(
+      (resolve) => {
+        this.renderCallback(
+          this.renderer.renderLoginStart((username, password) => {
+            resolve({ username, password });
+          }),
+        );
+      },
+    );
+
     const spy = await SpySession.get();
-    const username = 'demo_user';
-    const password = 'hdHUIß249!7zR98_ab';
 
     const credentials = encodeBasicCredentials(username, password);
-
-    const authHeader = `Basic ${credentials}`;
+    const basicAuthHeader = `Basic ${credentials}`;
 
     spy.onPause((stepLabel, info) => {
       this.renderCallback(this.renderer.renderStepInfoServer(stepLabel, info));
@@ -30,11 +36,10 @@ export class BasicAuthExecutor extends AbstractFlowExecutor {
     const docEndPoint = new DocumentEndpoint();
 
     this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
-    await docEndPoint.get(authHeader, spy.sessionId);
+    const img = await docEndPoint.get(basicAuthHeader, spy.sessionId);
     this.renderCallback(this.renderer.renderLineFromServer(''));
 
+    this.renderCallback(this.renderer.renderDocumentReceived(img));
     this.renderCallback(this.renderer.renderSeparator('50px'));
-
-    // TODO render popup with image+dataUrl
   }
 }

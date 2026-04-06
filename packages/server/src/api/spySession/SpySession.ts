@@ -23,6 +23,8 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
   private readonly socket: SpySocket;
   private config = new SpySessionConfig();
 
+  private pendingStepReject: (() => void) | undefined;
+
   constructor(socket: SpySocket) {
     this.id = uuidV4();
     this.socket = socket;
@@ -32,6 +34,11 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
 
   onDisconnect(callback: () => void): void {
     this.socket.on('disconnect', () => {
+      // kill pending step on disconnect. Should handle all flow abortions
+      if (this.pendingStepReject) {
+        this.pendingStepReject();
+      }
+
       LoggingService.instance.info(`Spy session disconnected: ${this.id}`);
       callback();
     });
@@ -43,10 +50,6 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
     });
   }
 
-  destroy(): void {
-    this.socket.disconnect(true);
-  }
-
   async step<K extends keyof T>(name: K, data: T[K]['data']): Promise<void> {
     if (!this.config.doSpy) {
       return;
@@ -55,8 +58,8 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
 
     this.socket.emit('pause', { name: stepName, data });
 
-    let timeoutHandler: NodeJS.Timeout;
     return new Promise<void>((resolve, reject) => {
+      this.pendingStepReject = reject;
       this.socket.once('resume', (name: StepIDs) => {
         if (name === stepName) {
           resolve();
@@ -66,16 +69,8 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
       this.socket.once('abort', () => {
         reject(new Error(`Flow aborted by client`));
       });
-
-      timeoutHandler = setTimeout(
-        () => {
-          LoggingService.instance.warn(`Spy session ${this.id} timed out during step ${stepName}`);
-          resolve();
-        },
-        1000 * 60 * 5,
-      );
     }).finally(() => {
-      clearTimeout(timeoutHandler);
+      this.pendingStepReject = undefined;
       this.socket.removeAllListeners('abort');
       this.socket.removeAllListeners('resume');
     });

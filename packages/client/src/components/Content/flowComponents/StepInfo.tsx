@@ -3,13 +3,14 @@ import type React from 'react';
 
 type StepInfoProps = {
   stepLabel: string;
-  info: Record<string, unknown>;
-  style?: React.CSSProperties;
+  info?: Record<string, unknown> | undefined;
+  stepStyle: React.CSSProperties;
+  containerStyle: React.CSSProperties;
 };
 
-export function StepInfo({ stepLabel, info, style }: StepInfoProps) {
+export function StepInfo({ stepLabel, info, stepStyle, containerStyle }: StepInfoProps) {
   return (
-    <div style={{ width: '100%' }}>
+    <div style={containerStyle}>
       <Box
         position="relative"
         bg="surfaceAlt"
@@ -19,16 +20,23 @@ export function StepInfo({ stepLabel, info, style }: StepInfoProps) {
         p={2}
         m={1}
         width="fit-content"
-        style={style}
+        style={stepStyle}
       >
         <Heading size="md">{stepLabel}</Heading>
-        <CodeBlock.Root mt={1} code={JSON.stringify(info, undefined, 2)} size="sm" language="json">
-          <CodeBlock.Content>
-            <CodeBlock.Code>
-              <CodeBlock.CodeText p={1} />
-            </CodeBlock.Code>
-          </CodeBlock.Content>
-        </CodeBlock.Root>
+        {info && (
+          <CodeBlock.Root
+            mt={1}
+            code={JSON.stringify(info, undefined, 2)}
+            size="sm"
+            language="json"
+          >
+            <CodeBlock.Content>
+              <CodeBlock.Code>
+                <CodeBlock.CodeText p={1} />
+              </CodeBlock.Code>
+            </CodeBlock.Content>
+          </CodeBlock.Root>
+        )}
       </Box>
     </div>
   );

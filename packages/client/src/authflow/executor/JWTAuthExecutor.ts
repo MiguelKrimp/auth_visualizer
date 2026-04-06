@@ -15,13 +15,19 @@ export class JWTAuthExecutor extends AbstractFlowExecutor {
   async execute(): Promise<void> {
     this.renderCallback(this.renderer.renderInitial());
 
-    // TODO show popup to ask for username and password
+    const { username, password } = await new Promise<{ username: string; password: string }>(
+      (resolve) => {
+        this.renderCallback(
+          this.renderer.renderLoginStart((username, password) => {
+            resolve({ username, password });
+          }),
+        );
+      },
+    );
+
     const spy = await SpySession.get();
-    const username = 'demo_user';
-    const password = 'hdHUIß249!7zR98_ab';
 
     const credentials = encodeBasicCredentials(username, password);
-
     const authHeader = `Basic ${credentials}`;
 
     spy.onPause((stepLabel, info) => {
@@ -34,14 +40,28 @@ export class JWTAuthExecutor extends AbstractFlowExecutor {
     const jwt = await jwtEndPoint.post(authHeader, spy.sessionId);
     this.renderCallback(this.renderer.renderLineFromServer('Received JWT'));
 
+    this.renderCallback(this.renderer.renderStepInfoClient('Using JWT for authentication'));
     await this.pause();
-    const docEndPoint = new DocumentEndpoint();
-    this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
-    await docEndPoint.get(`Bearer ${jwt}`, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
+
+    await this.getDocumentLoop(jwt, spy.sessionId);
 
     this.renderCallback(this.renderer.renderSeparator('50px'));
+  }
 
-    // TODO render popup with image+dataUrl
+  async getDocumentLoop(jwt: string, spySessionId: string): Promise<void> {
+    const docEndPoint = new DocumentEndpoint();
+    this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
+    const image = await docEndPoint.get(`Bearer ${jwt}`, spySessionId);
+    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
+
+    this.renderCallback(this.renderer.renderDocumentReceived(image));
+
+    this.renderCallback(
+      this.renderer.renderStepInfoClient(
+        'Got more cat pics?',
+        undefined,
+        this.getDocumentLoop.bind(this, jwt, spySessionId),
+      ),
+    );
   }
 }

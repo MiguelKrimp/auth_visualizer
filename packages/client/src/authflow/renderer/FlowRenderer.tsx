@@ -1,16 +1,29 @@
+import { Button } from '@chakra-ui/react';
 import type { JSX } from 'react';
 import { FaDesktop, FaServer } from 'react-icons/fa';
 
+import { BasicLoginPopup } from '../../components/common/BasicLoginPopup';
+import { ImageDialog } from '../../components/common/ImageDialog';
+import { ClientStep } from '../../components/Content/flowComponents/ClientStep';
 import { CommunicationLine } from '../../components/Content/flowComponents/CommunicationLine';
 import { DeviceLine } from '../../components/Content/flowComponents/DeviceLine';
 import { Separator } from '../../components/Content/flowComponents/Separator';
-import { StepInfo } from '../../components/Content/flowComponents/StepInfo';
+import { ServerStep } from '../../components/Content/flowComponents/ServerStep';
 
 const leftX = '20%';
 const rightX = '50%';
 
 const clientColor = 'bright';
 const serverColor = 'accent2';
+
+const flowInButtonProps = {
+  w: '100%',
+  h: 'unset',
+  p: 0,
+  bg: 'transparent',
+  display: 'flex',
+  justifyContent: 'flex-start',
+};
 
 export class FlowRenderer {
   private elements: JSX.Element[] = [];
@@ -43,18 +56,58 @@ export class FlowRenderer {
     return [...this.elements];
   }
 
-  renderStepInfoClient(stepLabel: string, info: Record<string, unknown>): JSX.Element[] {
+  renderLoginStart(callback: (username: string, password: string) => void): JSX.Element[] {
     this.elements.push(
-      <StepInfo stepLabel={stepLabel} info={info} style={{ right: `calc(${leftX} - 1em)` }} />,
+      <BasicLoginPopup
+        triggerComponent={
+          <Button {...flowInButtonProps}>
+            <ClientStep stepLabel="Login to get epic cat pics!" x={leftX} />
+          </Button>
+        }
+        onConfirm={callback}
+      />,
     );
 
     return [...this.elements];
   }
 
-  renderStepInfoServer(stepLabel: string, info: Record<string, unknown>): JSX.Element[] {
+  renderDocumentReceived(imageDataUrl: string): JSX.Element[] {
     this.elements.push(
-      <StepInfo stepLabel={stepLabel} info={info} style={{ left: `calc(${rightX} + 1em)` }} />,
+      <ImageDialog
+        triggerComponent={
+          <Button {...flowInButtonProps}>
+            <ClientStep stepLabel="Open the cat pics!" x={leftX} />
+          </Button>
+        }
+        imageDataUrl={imageDataUrl}
+      />,
     );
+
+    return [...this.elements];
+  }
+
+  renderStepInfoClient(
+    stepLabel: string,
+    info?: Record<string, unknown>,
+    callback?: () => void,
+  ): JSX.Element[] {
+    const step = <ClientStep stepLabel={stepLabel} info={info} x={leftX} />;
+
+    if (callback) {
+      this.elements.push(
+        <Button {...flowInButtonProps} onClick={callback}>
+          {step}
+        </Button>,
+      );
+    } else {
+      this.elements.push(step);
+    }
+
+    return [...this.elements];
+  }
+
+  renderStepInfoServer(stepLabel: string, info?: Record<string, unknown>): JSX.Element[] {
+    this.elements.push(<ServerStep stepLabel={stepLabel} info={info} x={rightX} />);
 
     return [...this.elements];
   }

@@ -1,5 +1,6 @@
 import { JWTAuthSteps } from '@auth-visualizer/common/authflow/steps/authenticators/JwtAuthSteps';
 import { Request, Response } from 'express';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 import { User, userRepository } from '../../../database/entities/User';
 import { JWTAudience, JWTService } from '../../../services/JWTService';
@@ -47,9 +48,14 @@ export class JWTAuthenticator extends Authenticator<JWTAuthSteps> {
       await spy.step('LookupUser', { username: user.username });
 
       return user;
-      // eslint-disable-next-line unused-imports/no-unused-vars
-    } catch (_err) {
-      throw new Error('Invalid or expired token');
+    } catch (err) {
+      if (err instanceof JsonWebTokenError) {
+        await spy.step('VerifyToken', { payload: err.message });
+
+        throw new Error('Invalid or expired token');
+      } else {
+        throw err;
+      }
     }
   }
 

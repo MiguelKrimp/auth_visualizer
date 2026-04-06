@@ -1,6 +1,7 @@
 import { Express, Request, Response } from 'express';
 
 import { User, userRepository } from '../../../database/entities/User';
+import { LoggingService } from '../../../services/LoggingService';
 import { PasswordService } from '../../../services/PasswordService';
 import { Authenticator } from '../../middleware/authentication/Authenticator';
 import { SecuredResource } from '../SecuredResource';
@@ -32,6 +33,9 @@ export class UserResource extends SecuredResource {
       newUser.username = username;
       newUser.passwordHash = PasswordService.hashPassword(password);
       await userRepository().insert(newUser);
+
+      LoggingService.instance.info(`Created new user: ${username}`);
+
       res.status(201).send('User created');
     });
   }
