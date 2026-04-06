@@ -1,5 +1,5 @@
 import { Box, Button } from '@chakra-ui/react';
-import { type JSX, useContext, useState } from 'react';
+import { type JSX, useContext, useEffect, useRef, useState } from 'react';
 
 import type { AuthFlow } from '../../authflow/AuthFlow';
 import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
@@ -10,6 +10,14 @@ type AuthflowContentProps = {
 
 export function AuthflowContent({ flow }: AuthflowContentProps) {
   const [flowElements, setFlowElements] = useState<JSX.Element[] | null>(null);
+
+  const drawingAreaRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (drawingAreaRef.current) {
+      const last = drawingAreaRef.current.lastChild as HTMLElement | null;
+      last?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [flowElements]);
 
   const executionContext = useContext(AuthFlowExecutionContext);
 
@@ -27,7 +35,7 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
       p={3}
       position="relative"
     >
-      <div style={{ position: 'relative', minHeight: '100%' }}>
+      <div ref={drawingAreaRef} style={{ position: 'relative', minHeight: '100%' }}>
         {executionContext.getExecutor() ? flowElements : null}
       </div>
       {!executionContext.getExecutor() ? (
