@@ -1,16 +1,12 @@
 import { Flex, HStack, IconButton, Link, Text } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
-import { MdSkipNext } from 'react-icons/md';
-import { AbstractFlowExecutor } from '../../authflow/executor/AbstractFlowExecutor';
-import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
+import { useContext } from 'react';
 import { FaGithub } from 'react-icons/fa';
+import { MdSkipNext } from 'react-icons/md';
+
+import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
 
 export function Footer() {
   const executionContext = useContext(AuthFlowExecutionContext);
-  const [executor, setExecutor] = useState<AbstractFlowExecutor | undefined>(
-    executionContext.executor,
-  );
-  executionContext.listener = setExecutor;
 
   return (
     <Flex
@@ -22,37 +18,46 @@ export function Footer() {
       borderRadius="xl"
       px={{ base: 4, md: 6 }}
       py={3}
-      justify="space-between"
       align="center"
       gap={3}
       direction={{ base: 'column', md: 'row' }}
     >
-      <Text fontSize="sm" color="muted">
-        {/* TODO more info */}
-        Status: {executor ? 'flow execution in progress' : 'waiting for flow execution'}
-      </Text>
-      <IconButton
-        bg="accent1"
-        color="background"
-        disabled={!executor}
-        rounded="full"
-        onClick={() => executor?.next()}
-      >
-        <MdSkipNext />
-      </IconButton>
-      <HStack>
-        <Text fontSize="sm" fontFamily="mono" color="accent2">
-          auth-visualizer v1.0
+      <Flex flex={{ base: 'unset', md: 1 }} justify={{ base: 'center', md: 'flex-start' }}>
+        <Text fontSize="sm" color="muted" textAlign={{ base: 'center', md: 'left' }}>
+          {/* TODO more info */}
+          Status:{' '}
+          {executionContext.getExecutor()
+            ? 'flow execution in progress'
+            : 'waiting for flow execution'}
         </Text>
-        <Link
-          color="text"
-          href="https://github.com/MiguelKrimp/auth_visualizer"
-          target="_blank"
-          rel="noopener noreferrer"
+      </Flex>
+      <Flex flex={{ base: 'unset', md: 1 }} justify="center">
+        <IconButton
+          alignmentBaseline="middle"
+          bg="accent1"
+          color="background"
+          disabled={!executionContext.getExecutor()}
+          rounded="full"
+          onClick={() => executionContext.getExecutor()?.next()}
         >
-          <FaGithub />
-        </Link>
-      </HStack>
+          <MdSkipNext />
+        </IconButton>
+      </Flex>
+      <Flex flex={{ base: 'unset', md: 1 }} justify={{ base: 'center', md: 'flex-end' }}>
+        <HStack>
+          <Text fontSize="sm" fontFamily="mono" color="accent2">
+            auth-visualizer v1.0
+          </Text>
+          <Link
+            color="text"
+            href="https://github.com/MiguelKrimp/auth_visualizer"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaGithub />
+          </Link>
+        </HStack>
+      </Flex>
     </Flex>
   );
 }

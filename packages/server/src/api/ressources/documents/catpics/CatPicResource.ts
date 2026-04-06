@@ -1,15 +1,16 @@
 import { Express } from 'express';
 
 import { catPicsRepository } from '../../../../database/entities/CatPics';
+import { LoggingService } from '../../../../services/LoggingService';
 import { Authenticator } from '../../../middleware/authentication/Authenticator';
 import { BasicAuthenticator } from '../../../middleware/authentication/BasicAuthenticator';
 import { JWTAuthenticator } from '../../../middleware/authentication/JWTAuthenticator';
 import { assertAdmin } from '../../../middleware/authorization/assertAdmin';
 import { SecuredResource } from '../../SecuredResource';
 
-export class SuperCuteDocuments extends SecuredResource {
+export class CatPicResource extends SecuredResource {
   getPath(): string {
-    return '/documents/cuties';
+    return '/documents/catpics';
   }
 
   getAuthenticators(): Authenticator[] {
@@ -19,7 +20,7 @@ export class SuperCuteDocuments extends SecuredResource {
   bind(app: Express): void {
     app.get(this.getPath(), async (req, res) => {
       const catPic = await catPicsRepository()
-        .createQueryBuilder('users')
+        .createQueryBuilder('catPics')
         .orderBy('RANDOM()')
         .getOne();
 
@@ -28,18 +29,20 @@ export class SuperCuteDocuments extends SecuredResource {
         return res.status(404).json({ error: "It's a cat-astrophe! No cat pics found." });
       }
 
-      res.status(200).send(catPic.dataUrl);
+      res.status(200).setHeader('Content-Type', 'text/plain').send(catPic.dataUrl);
     });
 
     app.post(this.getPath(), assertAdmin, async (req, res) => {
-      const { dataUrl } = req.body;
+      const { dataUrl, label } = req.body;
 
       if (!dataUrl) {
         return res.status(400).json({ error: 'Missing dataUrl' });
       }
 
-      const catPic = catPicsRepository().create({ dataUrl });
+      const catPic = catPicsRepository().create({ dataUrl, name: label || 'Unnamed cutie' });
       await catPicsRepository().save(catPic);
+
+      LoggingService.instance.info(`New cat pic added: ${catPic.name}`);
 
       res.status(201).json(catPic);
     });

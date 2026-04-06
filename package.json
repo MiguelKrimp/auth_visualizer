@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run build -w @auth-visualizer/common && npm run build -w @auth-visualizer/server && npm run build -w @auth-visualizer/client",
     "dev:common": "npm run dev -w @auth-visualizer/common",
-    "dev:server": "npm run dev -w @auth-visualizer/server && npm run dev:common",
+    "dev:server": "npm run dev -w @auth-visualizer/server",
     "dev:client": "npm run dev -w @auth-visualizer/client",
     "start": "npm run build -w @auth-visualizer/common && npm run start -w @auth-visualizer/server",
     "lint": "npm run lint -ws --if-present",

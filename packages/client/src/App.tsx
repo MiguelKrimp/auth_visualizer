@@ -1,12 +1,9 @@
 import { Box, Container } from '@chakra-ui/react';
 
+import { AuthFlowExecutionWrapper } from './components/common/AuthFlowExecutionWrapper';
 import { AuthSelection } from './components/Content/AuthSelection';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
-import {
-  AuthFlowExecutionContext,
-  ExecutionContext,
-} from './components/common/AuthFlowExecutionContext';
 
 function App() {
   return (
@@ -36,10 +33,10 @@ function App() {
         zIndex={1}
       >
         <Header />
-        <AuthFlowExecutionContext.Provider value={new ExecutionContext()}>
+        <AuthFlowExecutionWrapper>
           <AuthSelection />
           <Footer />
-        </AuthFlowExecutionContext.Provider>
+        </AuthFlowExecutionWrapper>
       </Container>
     </Box>
   );

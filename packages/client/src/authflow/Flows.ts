@@ -1,5 +1,6 @@
 import type { AuthFlow } from './AuthFlow';
 import { BasicAuthExecutor } from './executor/BasicAuthExecutor';
+import { JWTAuthExecutor } from './executor/JWTAuthExecutor';
 
 const flows: AuthFlow[] = [
   {
@@ -16,6 +17,7 @@ const flows: AuthFlow[] = [
     description:
       'JSON Web Tokens are compact, signed tokens that carry claims about a user or session. They are commonly used for stateless authentication because servers can validate signatures without storing per-session state. Token lifetime, signing algorithm choice, and secure storage all strongly affect security.',
     infoLink: 'https://www.rfc-editor.org/rfc/rfc7519',
+    executorFactory: (render) => new JWTAuthExecutor(render),
   },
   {
     id: 'totp-2fa',

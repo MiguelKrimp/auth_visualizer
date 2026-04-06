@@ -1,12 +1,13 @@
 import type { JSX } from 'react';
 
 import { DocumentEndpoint } from '../../api/rest/DocumentEndpoint';
+import { JWTEndpoint } from '../../api/rest/JWTEndpoint';
 import { SpySession } from '../../api/spySession/SpySession';
 import { encodeBasicCredentials } from '../../util/EncodingUtil';
 import { FlowRenderer } from '../renderer/FlowRenderer';
 import { AbstractFlowExecutor } from './AbstractFlowExecutor';
 
-export class BasicAuthExecutor extends AbstractFlowExecutor {
+export class JWTAuthExecutor extends AbstractFlowExecutor {
   constructor(renderCallback: (elements: JSX.Element[]) => void) {
     super(renderCallback, new FlowRenderer());
   }
@@ -27,11 +28,17 @@ export class BasicAuthExecutor extends AbstractFlowExecutor {
       this.renderCallback(this.renderer.renderStepInfoServer(stepLabel, info));
     });
 
-    const docEndPoint = new DocumentEndpoint();
+    const jwtEndPoint = new JWTEndpoint();
 
+    this.renderCallback(this.renderer.renderLineFromClient(`POST ${jwtEndPoint.getPath()}`));
+    const jwt = await jwtEndPoint.post(authHeader, spy.sessionId);
+    this.renderCallback(this.renderer.renderLineFromServer('Received JWT'));
+
+    await this.pause();
+    const docEndPoint = new DocumentEndpoint();
     this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
-    await docEndPoint.get(authHeader, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer(''));
+    await docEndPoint.get(`Bearer ${jwt}`, spy.sessionId);
+    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
 
     this.renderCallback(this.renderer.renderSeparator('50px'));
 

@@ -53,8 +53,6 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
     }
     const stepName = String(name) as StepIDs;
 
-    LoggingService.instance.log(stepName, data);
-
     this.socket.emit('pause', { name: stepName, data });
 
     let timeoutHandler: NodeJS.Timeout;

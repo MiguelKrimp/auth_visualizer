@@ -7,5 +7,5 @@ export type AuthFlow = {
   label: string;
   description: string;
   infoLink: string;
-  executorFactory?: (renderCallback: (elements: JSX.Element) => void) => AbstractFlowExecutor;
+  executorFactory?: (renderCallback: (elements: JSX.Element[]) => void) => AbstractFlowExecutor;
 };

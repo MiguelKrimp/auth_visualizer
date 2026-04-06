@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import express from 'express';
 
+import { CORSFilter } from './api/middleware/static/CORSFilter';
 import { ErrorLoggingMiddleware } from './api/middleware/static/ErrorLogging';
 import { JSONBodyParser } from './api/middleware/static/JSONBodyParser';
 import { registerResources } from './api/ResourceRegister';
@@ -37,6 +38,7 @@ async function main(): Promise<void> {
   const app = express();
 
   app.use(JSONBodyParser);
+  app.use(CORSFilter);
 
   registerResources(app);
 

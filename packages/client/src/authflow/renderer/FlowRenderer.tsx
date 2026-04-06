@@ -1,21 +1,77 @@
 import type { JSX } from 'react';
+import { FaDesktop, FaServer } from 'react-icons/fa';
 
-const leftX = '30%';
-const rightX = '70%';
+import { CommunicationLine } from '../../components/Content/flowComponents/CommunicationLine';
+import { DeviceLine } from '../../components/Content/flowComponents/DeviceLine';
+import { Separator } from '../../components/Content/flowComponents/Separator';
+import { StepInfo } from '../../components/Content/flowComponents/StepInfo';
+
+const leftX = '20%';
+const rightX = '50%';
+
+const clientColor = 'bright';
+const serverColor = 'accent2';
 
 export class FlowRenderer {
   private elements: JSX.Element[] = [];
 
   renderInitial(): JSX.Element[] {
-    const initialElements = [
-      <image x={`calc(${leftX} - 20px)`} y={5} height={40} width={40} href="./desktop.svg" />,
-      <line stroke="darkgreen" strokeWidth={5} x1={leftX} y1={50} x2={leftX} y2="99%" />,
-      <image x={`calc(${rightX} - 20px)`} y={5} height={40} width={40} href="./server.svg" />,
-      <line stroke="orange" strokeWidth={5} x1={rightX} y1={50} x2={rightX} y2="99%" />,
+    this.elements = [
+      <DeviceLine
+        x={leftX}
+        y="5px"
+        color={clientColor}
+        img={<FaDesktop size="1.5em" />}
+        label="Client"
+      />,
+      <DeviceLine
+        x={rightX}
+        y="5px"
+        color={serverColor}
+        img={<FaServer size="1.5em" />}
+        label="Server"
+      />,
+      <Separator height="100px" />,
     ];
 
-    this.elements.push(...initialElements);
+    return [...this.elements];
+  }
 
-    return this.elements;
+  renderSeparator(height: string): JSX.Element[] {
+    this.elements.push(<Separator height={height} />);
+
+    return [...this.elements];
+  }
+
+  renderStepInfoClient(stepLabel: string, info: Record<string, unknown>): JSX.Element[] {
+    this.elements.push(
+      <StepInfo stepLabel={stepLabel} info={info} style={{ right: `calc(${leftX} - 1em)` }} />,
+    );
+
+    return [...this.elements];
+  }
+
+  renderStepInfoServer(stepLabel: string, info: Record<string, unknown>): JSX.Element[] {
+    this.elements.push(
+      <StepInfo stepLabel={stepLabel} info={info} style={{ left: `calc(${rightX} + 1em)` }} />,
+    );
+
+    return [...this.elements];
+  }
+
+  private renderLine(color: string, text: string): JSX.Element[] {
+    this.elements.push(
+      <CommunicationLine x1={leftX} x2={`calc(100% - ${rightX})`} color={color} text={text} />,
+    );
+
+    return [...this.elements];
+  }
+
+  renderLineFromClient(text: string): JSX.Element[] {
+    return this.renderLine(clientColor, text);
+  }
+
+  renderLineFromServer(text: string): JSX.Element[] {
+    return this.renderLine(serverColor, text);
   }
 }

@@ -7,7 +7,7 @@ export abstract class AbstractFlowExecutor {
   protected renderer: FlowRenderer;
   protected renderCallback: (elements: JSX.Element[]) => void;
 
-  private resumeFnc?: (resume: boolean) => void;
+  private resumeFnc: ((resume: boolean) => void) | undefined;
 
   constructor(renderCallback: (elements: JSX.Element[]) => void, renderer: FlowRenderer) {
     this.renderCallback = renderCallback;
@@ -25,6 +25,7 @@ export abstract class AbstractFlowExecutor {
   async next(): Promise<void> {
     if (this.resumeFnc) {
       this.resumeFnc(true);
+      this.resumeFnc = undefined;
     } else {
       const spy = await SpySession.get();
       spy.resume();
@@ -34,6 +35,7 @@ export abstract class AbstractFlowExecutor {
   async abort(): Promise<void> {
     if (this.resumeFnc) {
       this.resumeFnc(false);
+      this.resumeFnc = undefined;
     } else {
       const spy = await SpySession.get();
       spy.abort();

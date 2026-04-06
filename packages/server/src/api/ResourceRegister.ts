@@ -2,7 +2,7 @@ import { Express } from 'express';
 
 import { LoggingService } from '../services/LoggingService';
 import { AuthenticationMiddleware } from './middleware/authentication/AuthenticationMiddleware';
-import { SuperCuteDocuments } from './ressources/documents/cuties/SuperCuteDocuments';
+import { CatPicResource } from './ressources/documents/catpics/CatPicResource';
 import { JWTLoginResource } from './ressources/login/jwt/JWTLoginResource';
 import { SecuredResource } from './ressources/SecuredResource';
 import { UserResource } from './ressources/users/UserResource';
@@ -10,7 +10,7 @@ import { UserResource } from './ressources/users/UserResource';
 export function registerResources(app: Express): void {
   const resources: SecuredResource[] = [
     new JWTLoginResource(),
-    new SuperCuteDocuments(),
+    new CatPicResource(),
     new UserResource(),
   ];
 

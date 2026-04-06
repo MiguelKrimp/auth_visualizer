@@ -7,8 +7,14 @@ export class CatPics {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column()
+  name!: string;
+
   @Column('text')
   dataUrl!: string;
+
+  @Column({ default: 'text/plain' })
+  mimeType!: string;
 }
 
 export function catPicsRepository() {

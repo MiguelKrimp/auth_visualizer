@@ -1,9 +1,8 @@
 import { Box, Heading, HStack, Separator, Tabs, Text } from '@chakra-ui/react';
 
-import type { AuthFlow } from '../../authflow/AuthFlow';
+import { flows } from '../../authflow/Flows';
 import { AuthflowContent } from './AuthflowContent';
 import { Tab } from './Tab';
-import { flows } from '../../authflow/Flows';
 
 export function AuthSelection() {
   return (

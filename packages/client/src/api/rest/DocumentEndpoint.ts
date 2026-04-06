@@ -1,14 +1,14 @@
 import { SPY_SESSION_HEADER } from '@auth-visualizer/common';
 
-import { HOST } from '../host';
+import { REST_HOST } from '../host';
 
 export class DocumentEndpoint {
   getPath(): string {
-    return '/documents';
+    return '/documents/catpics';
   }
 
   get(auth: string, spySessionId: string): Promise<string> {
-    return fetch(HOST + this.getPath(), {
+    return fetch(REST_HOST + this.getPath(), {
       method: 'GET',
       headers: {
         Authorization: auth,
@@ -23,14 +23,14 @@ export class DocumentEndpoint {
     });
   }
 
-  post(auth: string, dataUrl: string): Promise<void> {
-    return fetch(HOST + this.getPath(), {
+  post(auth: string, label: string, dataUrl: string): Promise<void> {
+    return fetch(REST_HOST + this.getPath(), {
       method: 'POST',
       headers: {
         Authorization: auth,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ dataUrl }),
+      body: JSON.stringify({ dataUrl, label }),
     }).then((response) => {
       if (!response.ok) {
         throw new Error(`Failed to upload document: ${response.statusText}`);
