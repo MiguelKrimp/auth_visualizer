@@ -27,7 +27,9 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
       p={3}
       position="relative"
     >
-      <div style={{ position: 'relative', minHeight: '100%' }}>{flowElements}</div>
+      <div style={{ position: 'relative', minHeight: '100%' }}>
+        {executionContext.getExecutor() ? flowElements : null}
+      </div>
       {!executionContext.getExecutor() ? (
         <Box
           position="absolute"

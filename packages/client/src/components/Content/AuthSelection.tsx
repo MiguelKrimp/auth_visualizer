@@ -1,10 +1,14 @@
 import { Box, Heading, HStack, Separator, Tabs, Text } from '@chakra-ui/react';
+import { useContext } from 'react';
 
 import { flows } from '../../authflow/Flows';
+import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
 import { AuthflowContent } from './AuthflowContent';
 import { Tab } from './Tab';
 
 export function AuthSelection() {
+  const executionContext = useContext(AuthFlowExecutionContext);
+
   return (
     <Box
       as="main"
@@ -43,6 +47,10 @@ export function AuthSelection() {
         minH="0"
         overflow="hidden"
         lazyMount
+        onValueChange={() => {
+          executionContext.getExecutor()?.abort();
+          executionContext.setExecutor(null);
+        }}
       >
         <Tabs.List bg="surface" p={0} borderRadius="lg" gapX="1">
           {flows.map((flow) => (

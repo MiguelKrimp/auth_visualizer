@@ -1,7 +1,7 @@
 import { Flex, HStack, IconButton, Link, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { FaGithub } from 'react-icons/fa';
-import { MdSkipNext } from 'react-icons/md';
+import { MdRefresh, MdSkipNext } from 'react-icons/md';
 
 import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
 
@@ -31,9 +31,20 @@ export function Footer() {
             : 'waiting for flow execution'}
         </Text>
       </Flex>
-      <Flex flex={{ base: 'unset', md: 1 }} justify="center">
+      <Flex flex={{ base: 'unset', md: 1 }} gap={4} justify="center">
         <IconButton
-          alignmentBaseline="middle"
+          bg="accent1"
+          color="background"
+          disabled={!executionContext.getExecutor()}
+          rounded="full"
+          onClick={() => {
+            executionContext.getExecutor()?.abort();
+            executionContext.setExecutor(null);
+          }}
+        >
+          <MdRefresh />
+        </IconButton>
+        <IconButton
           bg="accent1"
           color="background"
           disabled={!executionContext.getExecutor()}
