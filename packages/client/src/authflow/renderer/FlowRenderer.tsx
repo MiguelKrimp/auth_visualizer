@@ -1,4 +1,3 @@
-import { Button } from '@chakra-ui/react';
 import type { JSX } from 'react';
 import { FaDesktop, FaServer } from 'react-icons/fa';
 
@@ -7,23 +6,16 @@ import { ImageDialog } from '../../components/common/ImageDialog';
 import { ClientStep } from '../../components/Content/flowComponents/ClientStep';
 import { CommunicationLine } from '../../components/Content/flowComponents/CommunicationLine';
 import { DeviceLine } from '../../components/Content/flowComponents/DeviceLine';
+import { InteractableStep } from '../../components/Content/flowComponents/InteractableStep';
 import { Separator } from '../../components/Content/flowComponents/Separator';
 import { ServerStep } from '../../components/Content/flowComponents/ServerStep';
+import { EventHandler } from '../../util/EventHandler';
 
 const leftX = '20%';
 const rightX = '50%';
 
 const clientColor = 'bright';
 const serverColor = 'accent2';
-
-const flowInButtonProps = {
-  w: '100%',
-  h: 'unset',
-  p: 0,
-  bg: 'transparent',
-  display: 'flex',
-  justifyContent: 'flex-start',
-};
 
 export class FlowRenderer {
   private elements: JSX.Element[] = [];
@@ -57,14 +49,18 @@ export class FlowRenderer {
   }
 
   renderLoginStart(callback: (username: string, password: string) => void): JSX.Element[] {
+    const eventHandler = new EventHandler<void>();
     this.elements.push(
       <BasicLoginPopup
         triggerComponent={
-          <Button {...flowInButtonProps}>
+          <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
             <ClientStep stepLabel="Login to get epic cat pics!" x={leftX} />
-          </Button>
+          </InteractableStep>
         }
-        onConfirm={callback}
+        onConfirm={(username, password) => {
+          callback(username, password);
+          eventHandler.emit();
+        }}
       />,
     );
 
@@ -75,9 +71,9 @@ export class FlowRenderer {
     this.elements.push(
       <ImageDialog
         triggerComponent={
-          <Button {...flowInButtonProps}>
+          <InteractableStep>
             <ClientStep stepLabel="Open the cat pics!" x={leftX} />
-          </Button>
+          </InteractableStep>
         }
         imageDataUrl={imageDataUrl}
       />,
@@ -95,9 +91,9 @@ export class FlowRenderer {
 
     if (callback) {
       this.elements.push(
-        <Button {...flowInButtonProps} onClick={callback}>
+        <InteractableStep disableAfterInteraction click={callback}>
           {step}
-        </Button>,
+        </InteractableStep>,
       );
     } else {
       this.elements.push(step);
