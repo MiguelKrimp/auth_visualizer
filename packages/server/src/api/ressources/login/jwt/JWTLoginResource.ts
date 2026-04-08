@@ -2,14 +2,12 @@ import { JwtIssueSteps } from '@auth-visualizer/common/authflow/steps/resources/
 import { Express } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
-import { JWTAudience, JWTService } from '../../../../services/JWTService';
+import { JWTAge, JWTAudience, JWTService } from '../../../../services/JWTService';
 import { Authenticator } from '../../../middleware/authentication/Authenticator';
 import { BasicAuthenticator } from '../../../middleware/authentication/BasicAuthenticator';
 import { InteractiveResource } from '../../InteractiveResource';
 
 export class JWTLoginResource extends InteractiveResource<JwtIssueSteps> {
-  private static TTL = 5 * 60; // 5 minutes;
-
   getPath(): string {
     return '/login/jwt';
   }
@@ -31,13 +29,11 @@ export class JWTLoginResource extends InteractiveResource<JwtIssueSteps> {
         const claims: JwtPayload = {
           sub: user.username,
           aud: JWTAudience.Login,
-          iat: Math.floor(Date.now() / 1000),
-          exp: Math.floor(Date.now() / 1000) + JWTLoginResource.TTL,
         };
 
         await spy.step('BuildClaims', { claims });
 
-        const token = JWTService.createToken(claims);
+        const token = JWTService.createToken(claims, JWTAge.Short);
         await spy.step('CreateToken', { token });
 
         res

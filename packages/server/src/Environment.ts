@@ -1,11 +1,14 @@
 const EnvironmentVars = {
+  // client
+  clientOrigin: process.env.CLIENT_ORIGIN as string,
+
   development: process.env.DEVELOPMENT === 'true',
   demoUsername: process.env.DEMO_USER_USERNAME as string,
   demoPassword: process.env.DEMO_USER_PASSWORD as string,
-
   jwtSecret: process.env.JWT_SECRET as string,
 
   // server
+  hostname: process.env.HOSTNAME as string,
   port: Number(process.env.PORT),
 
   // db

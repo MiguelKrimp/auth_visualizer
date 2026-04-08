@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json",
-    "dev": "node --watch --env-file=../../development.env -r ts-node/register src/index.ts",
-    "start": "node --env-file=../../production.env dist/index.js",
+    "dev": "node --watch --env-file=../../.env.development -r ts-node/register src/index.ts",
+    "start": "node --env-file=../../.env.production dist/index.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@auth-visualizer/common": "1.0.0",
+    "@simplewebauthn/server": "^13.3.0",
     "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",

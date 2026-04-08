@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 import DataSource from '../DataSource';
+import { Authenticator } from './Authenticator';
 import { Role } from './Role';
 
 @Entity()
@@ -8,7 +9,7 @@ export class User {
   @PrimaryColumn()
   username!: string;
 
-  @Column()
+  @Column({ nullable: true })
   passwordHash!: string;
 
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP()' })
@@ -16,6 +17,11 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.TempUser })
   role!: Role;
+
+  @OneToMany(() => Authenticator, (authenticator) => authenticator.user, {
+    cascade: true,
+  })
+  authenticators!: Authenticator[];
 }
 
 export function userRepository() {

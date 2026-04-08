@@ -15,4 +15,6 @@ export default defineConfig({
       '@auth-visualizer/common/': `${path.resolve(__dirname, '../common/src')}/`,
     },
   },
+  envDir: path.resolve(__dirname, '../../'),
+  envPrefix: 'CLIENT_',
 });

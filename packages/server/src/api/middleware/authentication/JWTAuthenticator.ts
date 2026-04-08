@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
 import { User, userRepository } from '../../../database/entities/User';
-import { JWTAudience, JWTService } from '../../../services/JWTService';
+import { JWTAge, JWTAudience, JWTService } from '../../../services/JWTService';
 import { ISpySession } from '../../spySession/SpySession';
 import { Authenticator } from './Authenticator';
 
@@ -32,7 +32,7 @@ export class JWTAuthenticator extends Authenticator<JWTAuthSteps> {
     });
 
     try {
-      const payload = JWTService.verifyToken(token);
+      const payload = JWTService.verifyToken(token, JWTAge.Short);
       await spy.step('VerifyToken', { payload });
 
       if (!payload.sub || payload.aud !== JWTAudience.Login) {

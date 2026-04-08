@@ -1,2 +1,1 @@
-export const HOST = 'localhost:3000';
-export const REST_HOST = 'http://localhost:3000';
+export const REST_HOST = import.meta.env.CLIENT_API_BASE_URL || window.location.origin;

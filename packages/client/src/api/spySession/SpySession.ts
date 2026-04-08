@@ -8,7 +8,7 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
 import { StepLabels } from '../../util/StepLabels';
-import { HOST } from '../host';
+import { REST_HOST } from '../host';
 
 export type SpyingSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -24,7 +24,7 @@ export class SpySession {
   static async get(): Promise<SpySession> {
     if (!SpySession.instance) {
       SpySession.instance = new Promise<SpySession>((resolve, reject) => {
-        const socket = io(`ws://${HOST}/spy`, {
+        const socket = io(REST_HOST + '/spy', {
           transports: ['websocket', 'polling'],
         });
         socket.on('sessionId', (sessionId) => {
