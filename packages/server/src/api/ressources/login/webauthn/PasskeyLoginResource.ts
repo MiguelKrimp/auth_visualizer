@@ -20,17 +20,21 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
   bind(app: Express): void {
     app.get(
       this.getPath(),
-      this.injectSpySession(async (req, res) => {
+      this.injectSpySession(async (req, res, spy) => {
         const authenticationOptions =
           await PasskeyService.getInstance().createAuthenticationOptions();
 
-        const token = JWTService.createToken(
-          {
-            aud: JWTAudience.PasskeyAuthentication,
-            challenge: authenticationOptions.challenge,
-          },
-          JWTAge.Short,
-        );
+        const claims = {
+          aud: JWTAudience.PasskeyAuthentication,
+          challenge: authenticationOptions.challenge,
+        };
+
+        const token = JWTService.createToken(claims, JWTAge.Short);
+
+        await spy.step('CreateAuthenticationOptions', {
+          options: authenticationOptions,
+          tokenClaims: claims,
+        });
 
         res.json({ options: authenticationOptions, token });
       }),
@@ -38,7 +42,7 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
 
     app.post(
       this.getPath(),
-      this.injectSpySession(async (req, res) => {
+      this.injectSpySession(async (req, res, spy) => {
         const { token } = req.body;
         const challengeResponse = req.body.response as AuthenticationResponseJSON;
 
@@ -48,23 +52,33 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
         }
 
         const decodedToken = JWTService.verifyToken(token, JWTAge.Short);
+        await spy.step('VerifiedChallengeToken', { tokenClaims: decodedToken });
         if (decodedToken.aud !== JWTAudience.PasskeyAuthentication || !decodedToken.challenge) {
           res.status(400).json({ error: 'Invalid token' });
           return;
         }
 
+        const authenticatorId = challengeResponse.id;
+        const username = Buffer.from(challengeResponse.response.userHandle, 'base64').toString(
+          'utf-8',
+        );
         const authenticator = await authenticatorRepository().findOne({
           where: {
-            id: challengeResponse.id,
+            id: authenticatorId,
             user: {
-              username: Buffer.from(challengeResponse.response.userHandle, 'base64').toString(
-                'utf-8',
-              ),
+              username,
             },
           },
           relations: ['user'],
         });
 
+        await spy.step('LookupAuthenticator', {
+          lookup: {
+            id: authenticatorId,
+            username,
+          },
+          authenticatorFound: !!authenticator,
+        });
         if (!authenticator) {
           res.status(404).json({ error: 'Authenticator not found' });
           return;
@@ -78,6 +92,11 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
           challengeResponse,
         );
 
+        await spy.step('VerifyLoginChallenge', {
+          verified: verificationResult.verified,
+          verificationResult,
+        });
+
         if (!verificationResult.verified) {
           res.status(400).json({ error: 'Authentication verification failed' });
           return;
@@ -85,8 +104,14 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
 
         authenticator.counter = verificationResult.authenticationInfo.newCounter;
         await authenticatorRepository().save(authenticator);
+        await spy.step('UpdateAuthenticatorCounter', {
+          newCounter: authenticator.counter,
+        });
 
-        const loginToken = JWTService.createLoginToken(authenticator.user.username);
+        const loginToken = JWTService.createToken(
+          JWTService.createLoginClaims(authenticator.user.username),
+          JWTAge.Short,
+        );
         res
           .status(200)
           .setHeader('Cache-Control', 'no-store')

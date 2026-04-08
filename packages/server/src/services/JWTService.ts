@@ -3,13 +3,13 @@ import jwt, { Jwt, JwtPayload } from 'jsonwebtoken';
 import { EnvironmentVars } from '../Environment';
 
 export class JWTService {
-  static createLoginToken(username: string): string {
+  static createLoginClaims(username: string): JwtPayload {
     const payload: JwtPayload = {
       sub: username,
       aud: JWTAudience.Login,
     };
 
-    return this.createToken(payload, JWTAge.Short);
+    return payload;
   }
 
   static createToken(payload: JwtPayload, expiresIn: JWTAge): string {

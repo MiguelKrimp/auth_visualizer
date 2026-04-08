@@ -21,7 +21,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
   bind(app: Express): void {
     app.get(
       this.getPath(),
-      this.injectSpySession(async (req, res) => {
+      this.injectSpySession(async (req, res, spy) => {
         const username = req.query.username as string;
 
         if (!username) {
@@ -32,14 +32,17 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         const registrationOptions =
           await PasskeyService.getInstance().createRegistrationOptions(username);
 
-        const token = JWTService.createToken(
-          {
-            sub: username,
-            aud: JWTAudience.PasskeyRegistration,
-            challenge: registrationOptions.challenge,
-          },
-          JWTAge.Short,
-        );
+        const claims = {
+          sub: username,
+          aud: JWTAudience.PasskeyRegistration,
+          challenge: registrationOptions.challenge,
+        };
+        const token = JWTService.createToken(claims, JWTAge.Short);
+
+        await spy.step('CreateRegistrationOptions', {
+          options: registrationOptions,
+          tokenClaims: claims,
+        });
 
         res.json({ options: registrationOptions, token });
       }),
@@ -47,7 +50,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
 
     app.post(
       this.getPath(),
-      this.injectSpySession(async (req, res) => {
+      this.injectSpySession(async (req, res, spy) => {
         const { token } = req.body;
         const registrationResponse = req.body.response as RegistrationResponseJSON;
 
@@ -57,6 +60,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         }
 
         const decodedToken = JWTService.verifyToken(token, JWTAge.Short);
+        await spy.step('VerifiedRegisterToken', { tokenClaims: decodedToken });
         if (
           decodedToken.aud !== JWTAudience.PasskeyRegistration ||
           !decodedToken.challenge ||
@@ -70,6 +74,11 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
           decodedToken.challenge,
           registrationResponse,
         );
+
+        await spy.step('VerifyRegisterChallenge', {
+          verified: registrationResult.verified,
+          verificationResult: registrationResult,
+        });
 
         if (!registrationResult.verified) {
           res.status(400).json({ error: 'Registration verification failed' });
@@ -88,8 +97,15 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
           ],
         });
         await userRepository().save(user);
+        await spy.step('CreateUserAndAuthenticator', {
+          userId: user.username,
+          authenticatorId: registrationResult.registrationInfo.credential.id,
+        });
 
-        const loginToken = JWTService.createLoginToken(user.username);
+        const loginToken = JWTService.createToken(
+          JWTService.createLoginClaims(user.username),
+          JWTAge.Short,
+        );
         res
           .status(200)
           .setHeader('Cache-Control', 'no-store')

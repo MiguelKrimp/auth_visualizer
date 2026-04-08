@@ -1,9 +1,34 @@
 import { ValidAuthSteps } from '../AuthSteps';
 
 export type PasskeyRegisterSteps = ValidAuthSteps<{
-  idk: {
-    data: any;
+  CreateRegistrationOptions: {
+    data: {
+      options: any;
+      tokenClaims: any;
+    };
+  };
+  VerifiedRegisterToken: {
+    data: {
+      tokenClaims: any;
+    };
+  };
+  VerifyRegisterChallenge: {
+    data: {
+      verified: boolean;
+      verificationResult: any;
+    };
+  };
+  CreateUserAndAuthenticator: {
+    data: {
+      userId: string;
+      authenticatorId: string;
+    };
   };
 }>;
 
-export const PasskeyRegisterStepKeys = ['idk'] as const satisfies (keyof PasskeyRegisterSteps)[];
+export const PasskeyRegisterStepKeys = [
+  'CreateRegistrationOptions',
+  'VerifiedRegisterToken',
+  'VerifyRegisterChallenge',
+  'CreateUserAndAuthenticator',
+] as const satisfies (keyof PasskeyRegisterSteps)[];
