@@ -33,10 +33,3 @@ export type PasskeyLoginSteps = ValidAuthSteps<{
     };
   };
 }>;
-
-export const PasskeyLoginStepKeys = [
-  'CreateAuthenticationOptions',
-  'VerifiedChallengeToken',
-  'LookupAuthenticator',
-  'VerifyLoginChallenge',
-] as const satisfies (keyof PasskeyLoginSteps)[];

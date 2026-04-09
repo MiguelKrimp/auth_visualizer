@@ -1,8 +1,12 @@
-import { BasicAuthStepKeys } from './authenticators/BasicAuthSteps';
-import { JWTAuthStepKeys } from './authenticators/JwtAuthSteps';
-import { JwtIssueStepKeys } from './resources/JwtIssueSteps';
+import type { BasicAuthSteps } from './authenticators/BasicAuthSteps';
+import type { JWTAuthSteps } from './authenticators/JwtAuthSteps';
+import type { JwtIssueSteps } from './resources/JwtIssueSteps';
+import type { PasskeyLoginSteps } from './resources/PasskeyLoginSteps';
+import type { PasskeyRegisterSteps } from './resources/PasskeyRegisterSteps';
 
 export type StepIDs =
-  | (typeof BasicAuthStepKeys)[number]
-  | (typeof JWTAuthStepKeys)[number]
-  | (typeof JwtIssueStepKeys)[number];
+  | keyof BasicAuthSteps
+  | keyof JWTAuthSteps
+  | keyof JwtIssueSteps
+  | keyof PasskeyLoginSteps
+  | keyof PasskeyRegisterSteps;

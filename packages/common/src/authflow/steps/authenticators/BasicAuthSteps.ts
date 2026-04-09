@@ -20,9 +20,3 @@ export type BasicAuthSteps = ValidAuthSteps<{
     };
   };
 }>;
-
-export const BasicAuthStepKeys = [
-  'DecodeBasicHeader',
-  'LookupUserPassword',
-  'VerifyPassword',
-] as const satisfies (keyof BasicAuthSteps)[];

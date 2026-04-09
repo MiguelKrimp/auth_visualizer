@@ -12,8 +12,3 @@ export type JwtIssueSteps = ValidAuthSteps<{
     };
   };
 }>;
-
-export const JwtIssueStepKeys = [
-  'BuildClaims',
-  'CreateToken',
-] as const satisfies (keyof JwtIssueSteps)[];

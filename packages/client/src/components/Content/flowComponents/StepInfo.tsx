@@ -26,6 +26,9 @@ export function StepInfo({ stepLabel, info, stepStyle, containerStyle }: StepInf
         {info && (
           <CodeBlock.Root
             mt={1}
+            maxH="30vh"
+            maxW="25vw"
+            overflow="auto"
             code={JSON.stringify(info, undefined, 2)}
             size="sm"
             language="json"

@@ -24,10 +24,3 @@ export type JWTAuthSteps = ValidAuthSteps<{
     };
   };
 }>;
-
-export const JWTAuthStepKeys = [
-  'ExtractToken',
-  'DecodeToken',
-  'VerifyToken',
-  'LookupUser',
-] as const satisfies (keyof JWTAuthSteps)[];

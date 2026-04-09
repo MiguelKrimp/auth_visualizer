@@ -25,10 +25,3 @@ export type PasskeyRegisterSteps = ValidAuthSteps<{
     };
   };
 }>;
-
-export const PasskeyRegisterStepKeys = [
-  'CreateRegistrationOptions',
-  'VerifiedRegisterToken',
-  'VerifyRegisterChallenge',
-  'CreateUserAndAuthenticator',
-] as const satisfies (keyof PasskeyRegisterSteps)[];
