@@ -4,8 +4,8 @@ import type { JSX } from 'react';
 export type DeviceLineProps = {
   x: string;
   y: string;
-  img: JSX.Element;
-  label: string;
+  img?: JSX.Element;
+  label?: string;
   color: string;
 };
 

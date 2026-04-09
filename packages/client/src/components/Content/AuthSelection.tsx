@@ -48,8 +48,12 @@ export function AuthSelection() {
         overflow="hidden"
         lazyMount
         onValueChange={() => {
-          executionContext.getExecutor()?.abort();
-          executionContext.setExecutor(null);
+          executionContext
+            .getExecutor()
+            ?.abort()
+            .finally(() => {
+              executionContext.setExecutor(null);
+            });
         }}
       >
         <Tabs.List bg="surface" p={0} borderRadius="lg" gapX="1">

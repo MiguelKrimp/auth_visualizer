@@ -38,8 +38,12 @@ export function Footer() {
           disabled={!executionContext.getExecutor()}
           rounded="full"
           onClick={() => {
-            executionContext.getExecutor()?.abort();
-            executionContext.setExecutor(null);
+            executionContext
+              .getExecutor()
+              ?.abort()
+              .finally(() => {
+                executionContext.setExecutor(null);
+              });
           }}
         >
           <MdRefresh />

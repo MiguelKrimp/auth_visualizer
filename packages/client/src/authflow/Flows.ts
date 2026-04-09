@@ -1,6 +1,7 @@
 import type { AuthFlow } from './AuthFlow';
 import { BasicAuthExecutor } from './executor/BasicAuthExecutor';
 import { JWTAuthExecutor } from './executor/JWTAuthExecutor';
+import { WebAuthnExecutor } from './executor/WebAuthnExecutor';
 
 const flows: AuthFlow[] = [
   {
@@ -39,6 +40,7 @@ const flows: AuthFlow[] = [
     description:
       'WebAuthn enables strong, phishing-resistant authentication using public-key cryptography. Credentials are created and stored by authenticators such as security keys, platform biometrics, or passkeys. Since no shared secret password is sent to the server, it reduces credential theft and replay risks.',
     infoLink: 'https://www.w3.org/TR/webauthn-3/',
+    executorFactory: (render) => new WebAuthnExecutor(render),
   },
 ];
 

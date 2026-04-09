@@ -30,9 +30,7 @@ export class JWTAuthExecutor extends AbstractFlowExecutor {
     const credentials = encodeBasicCredentials(username, password);
     const authHeader = `Basic ${credentials}`;
 
-    spy.onPause((stepLabel, info) => {
-      this.renderCallback(this.renderer.renderStepInfoServer(stepLabel, info));
-    });
+    await this.registerStepListener();
 
     const jwtEndPoint = new JWTEndpoint();
 

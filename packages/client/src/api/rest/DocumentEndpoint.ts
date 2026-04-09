@@ -7,14 +7,18 @@ export class DocumentEndpoint {
     return '/documents/catpics';
   }
 
-  get(auth: string, spySessionId: string): Promise<string> {
+  get(auth: string, spySessionId?: string): Promise<string> {
+    const headers: HeadersInit = {
+      Authorization: auth,
+      'Content-Type': 'text/plain',
+    };
+    if (spySessionId) {
+      headers[SPY_SESSION_HEADER] = spySessionId;
+    }
+
     return fetch(REST_HOST + this.getPath(), {
       method: 'GET',
-      headers: {
-        Authorization: auth,
-        [SPY_SESSION_HEADER]: spySessionId,
-        'Content-Type': 'text/plain',
-      },
+      headers: headers,
     }).then((response) => {
       if (!response.ok) {
         throw new Error(`Failed to fetch document: ${response.statusText}`);

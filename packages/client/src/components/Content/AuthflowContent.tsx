@@ -14,7 +14,7 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
   const drawingAreaRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (drawingAreaRef.current) {
-      const last = drawingAreaRef.current.lastChild as HTMLElement | null;
+      const last = drawingAreaRef.current.lastChild?.lastChild as HTMLElement | null;
       last?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [flowElements]);

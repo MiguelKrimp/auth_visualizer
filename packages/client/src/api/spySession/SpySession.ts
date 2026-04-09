@@ -68,6 +68,7 @@ export class SpySession {
 
   abort() {
     this.websocket.emit('abort');
+    this.websocket.off('pause');
     this.currentStep = undefined;
   }
 

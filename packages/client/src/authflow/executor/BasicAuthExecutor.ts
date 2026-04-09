@@ -29,9 +29,7 @@ export class BasicAuthExecutor extends AbstractFlowExecutor {
     const credentials = encodeBasicCredentials(username, password);
     const basicAuthHeader = `Basic ${credentials}`;
 
-    spy.onPause((stepLabel, info) => {
-      this.renderCallback(this.renderer.renderStepInfoServer(stepLabel, info));
-    });
+    await this.registerStepListener();
 
     const docEndPoint = new DocumentEndpoint();
 
