@@ -1,6 +1,7 @@
 import { SPY_SESSION_HEADER } from '@auth-visualizer/common';
 
 import { REST_HOST } from '../host';
+import { throwResponseError } from '../util';
 
 export class JWTEndpoint {
   getPath(): string {
@@ -15,9 +16,9 @@ export class JWTEndpoint {
         'Content-Type': 'text/plain',
         [SPY_SESSION_HEADER]: spySessionId,
       },
-    }).then((response) => {
+    }).then(async (response) => {
       if (!response.ok) {
-        throw new Error(`Failed to fetch JWT: ${response.statusText}`);
+        await throwResponseError(response);
       }
       return response.text();
     });

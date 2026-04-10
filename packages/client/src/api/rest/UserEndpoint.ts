@@ -1,4 +1,5 @@
 import { REST_HOST } from '../host';
+import { throwResponseError } from '../util';
 
 export class UserEndpoint {
   getPath(): string {
@@ -12,11 +13,9 @@ export class UserEndpoint {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ username, password }),
-    }).then((response) => {
+    }).then(async (response) => {
       if (!response.ok) {
-        return response.text().then((text) => {
-          throw new Error(text);
-        });
+        await throwResponseError(response);
       }
       return response.text();
     });

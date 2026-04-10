@@ -32,7 +32,7 @@ export const useFlowExecutorStore = create<ExecutionContext>((set, get) => ({
     const executor = factory();
     set({ executor, flowState: FlowState.Running });
     return executor
-      .execute()
+      .start()
       .then(() => {
         set({ flowState: FlowState.Completed });
       })

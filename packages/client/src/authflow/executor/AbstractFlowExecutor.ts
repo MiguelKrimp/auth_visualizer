@@ -21,6 +21,16 @@ export abstract class AbstractFlowExecutor<Renderer extends FlowRenderer = FlowR
     });
   }
 
+  start(): Promise<void> {
+    return this.execute().catch((e) => {
+      this.renderCallback(
+        this.renderer.renderLine('red.500', e instanceof Error ? e.message : String(e)),
+      );
+      this.renderCallback(this.renderer.renderSeparator('50px'));
+      throw e;
+    });
+  }
+
   abstract execute(): Promise<void>;
 
   async pause(): Promise<boolean> {

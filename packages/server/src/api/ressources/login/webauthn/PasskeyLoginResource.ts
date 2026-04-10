@@ -47,14 +47,14 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
         const challengeResponse = req.body.response as AuthenticationResponseJSON;
 
         if (!token || !challengeResponse.response.userHandle) {
-          res.status(400).json({ error: 'Token and challenge response are required' });
+          res.status(400).send('Token and challenge response are required');
           return;
         }
 
         const decodedToken = JWTService.verifyToken(token, JWTAge.Short);
         await spy.step('VerifiedChallengeToken', { tokenClaims: decodedToken });
         if (decodedToken.aud !== JWTAudience.PasskeyAuthentication || !decodedToken.challenge) {
-          res.status(400).json({ error: 'Invalid token' });
+          res.status(400).send('Invalid token');
           return;
         }
 
@@ -80,7 +80,7 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
           authenticatorFound: !!authenticator,
         });
         if (!authenticator) {
-          res.status(404).json({ error: 'Authenticator not found' });
+          res.status(404).send('Authenticator not found');
           return;
         }
 
@@ -98,7 +98,7 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
         });
 
         if (!verificationResult.verified) {
-          res.status(400).json({ error: 'Authentication verification failed' });
+          res.status(400).send('Authentication verification failed');
           return;
         }
 

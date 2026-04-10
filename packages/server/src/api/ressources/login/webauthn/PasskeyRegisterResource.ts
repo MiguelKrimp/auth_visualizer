@@ -26,7 +26,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         const username = req.principal?.username;
 
         if (!username) {
-          res.status(401).json({ error: 'Unauthorized' });
+          res.status(401).send('Unauthorized');
           return;
         }
 
@@ -56,7 +56,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         const registrationResponse = req.body.response as RegistrationResponseJSON;
 
         if (!token || !registrationResponse) {
-          res.status(400).json({ error: 'Token and registration response are required' });
+          res.status(400).send('Token and registration response are required');
           return;
         }
 
@@ -67,7 +67,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
           !decodedToken.challenge ||
           !decodedToken.sub
         ) {
-          res.status(400).json({ error: 'Invalid token' });
+          res.status(400).send('Invalid token');
           return;
         }
 
@@ -82,7 +82,7 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         });
 
         if (!registrationResult.verified) {
-          res.status(400).json({ error: 'Registration verification failed' });
+          res.status(400).send('Registration verification failed');
           return;
         }
 

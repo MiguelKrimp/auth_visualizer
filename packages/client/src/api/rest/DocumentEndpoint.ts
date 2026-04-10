@@ -1,6 +1,7 @@
 import { SPY_SESSION_HEADER } from '@auth-visualizer/common';
 
 import { REST_HOST } from '../host';
+import { throwResponseError } from '../util';
 
 export class DocumentEndpoint {
   getPath(): string {
@@ -19,9 +20,9 @@ export class DocumentEndpoint {
     return fetch(REST_HOST + this.getPath(), {
       method: 'GET',
       headers: headers,
-    }).then((response) => {
+    }).then(async (response) => {
       if (!response.ok) {
-        throw new Error(`Failed to fetch document: ${response.statusText}`);
+        await throwResponseError(response);
       }
       return response.text();
     });
@@ -35,9 +36,9 @@ export class DocumentEndpoint {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ dataUrl, label }),
-    }).then((response) => {
+    }).then(async (response) => {
       if (!response.ok) {
-        throw new Error(`Failed to upload document: ${response.statusText}`);
+        await throwResponseError(response);
       }
     });
   }

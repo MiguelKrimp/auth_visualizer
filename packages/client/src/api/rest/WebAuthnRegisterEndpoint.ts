@@ -5,6 +5,7 @@ import type {
 } from '@simplewebauthn/browser';
 
 import { REST_HOST } from '../host';
+import { throwResponseError } from '../util';
 
 export class WebAuthnRegisterEndpoint {
   getPath(): string {
@@ -21,7 +22,7 @@ export class WebAuthnRegisterEndpoint {
       },
     });
     if (!response.ok) {
-      throw new Error(`Failed to get registration options: ${response.statusText}`);
+      await throwResponseError(response);
     }
     return response.json() as Promise<{
       options: PublicKeyCredentialCreationOptionsJSON;
@@ -44,6 +45,9 @@ export class WebAuthnRegisterEndpoint {
       },
       body: JSON.stringify({ token, response: credential }),
     });
+    if (!registerResp.ok) {
+      await throwResponseError(registerResp);
+    }
     return registerResp.text();
   }
 }

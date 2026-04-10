@@ -128,7 +128,7 @@ export class FlowRenderer {
     return [...this.allElements];
   }
 
-  private renderLine(color: string, text: string): JSX.Element[] {
+  renderLine(color: string, text: string): JSX.Element[] {
     this.addElements([
       <CommunicationLine
         x1={FlowRenderer.LEFTX}

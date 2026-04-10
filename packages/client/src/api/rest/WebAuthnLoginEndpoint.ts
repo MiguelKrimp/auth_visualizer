@@ -5,6 +5,7 @@ import type {
 } from '@simplewebauthn/browser';
 
 import { REST_HOST } from '../host';
+import { throwResponseError } from '../util';
 
 export class WebAuthnLoginEndpoint {
   getPath(): string {
@@ -17,7 +18,7 @@ export class WebAuthnLoginEndpoint {
       headers: { 'Content-Type': 'application/json', [SPY_SESSION_HEADER]: spySessionId },
     });
     if (!response.ok) {
-      throw new Error(`Failed to get login options: ${response.statusText}`);
+      await throwResponseError(response);
     }
     return response.json() as Promise<{
       options: PublicKeyCredentialRequestOptionsJSON;
@@ -35,6 +36,9 @@ export class WebAuthnLoginEndpoint {
       headers: { 'Content-Type': 'application/json', [SPY_SESSION_HEADER]: spySessionId },
       body: JSON.stringify({ token, response: credential }),
     });
+    if (!registerResp.ok) {
+      await throwResponseError(registerResp);
+    }
     return registerResp.text();
   }
 }
