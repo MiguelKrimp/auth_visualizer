@@ -1,6 +1,5 @@
 import { Box, Container } from '@chakra-ui/react';
 
-import { AuthFlowExecutionWrapper } from './components/common/AuthFlowExecutionWrapper';
 import { AuthSelection } from './components/Content/AuthSelection';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
@@ -33,10 +32,8 @@ function App() {
         zIndex={1}
       >
         <Header />
-        <AuthFlowExecutionWrapper>
-          <AuthSelection />
-          <Footer />
-        </AuthFlowExecutionWrapper>
+        <AuthSelection />
+        <Footer />
       </Container>
     </Box>
   );

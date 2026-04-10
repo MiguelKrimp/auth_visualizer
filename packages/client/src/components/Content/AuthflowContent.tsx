@@ -1,14 +1,23 @@
 import { Box, Button } from '@chakra-ui/react';
-import { type JSX, useContext, useEffect, useRef, useState } from 'react';
+import { type JSX, useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import type { AuthFlow } from '../../authflow/AuthFlow';
-import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
+import { useFlowExecutorStore } from '../common/AuthFlowExecutionContext';
 
 type AuthflowContentProps = {
   flow: AuthFlow;
 };
 
 export function AuthflowContent({ flow }: AuthflowContentProps) {
+  const { executor, startExecution, initialize } = useFlowExecutorStore(
+    useShallow((state) => ({
+      executor: state.executor,
+      startExecution: state.startExecution,
+      initialize: state.initialize,
+    })),
+  );
+
   const [flowElements, setFlowElements] = useState<JSX.Element[] | null>(null);
 
   const drawingAreaRef = useRef<HTMLDivElement | null>(null);
@@ -18,8 +27,6 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
       last?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [flowElements]);
-
-  const executionContext = useContext(AuthFlowExecutionContext);
 
   return (
     <Box
@@ -36,9 +43,9 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
       position="relative"
     >
       <div ref={drawingAreaRef} style={{ position: 'relative', minHeight: '100%' }}>
-        {executionContext.getExecutor() ? flowElements : null}
+        {executor ? flowElements : null}
       </div>
-      {!executionContext.getExecutor() ? (
+      {!executor && flow.executorFactory ? (
         <Box
           position="absolute"
           top="50%"
@@ -51,11 +58,8 @@ export function AuthflowContent({ flow }: AuthflowContentProps) {
             bg="accent1"
             color="background"
             onClick={() => {
-              if (flow.executorFactory) {
-                const exec = flow.executorFactory(setFlowElements);
-                executionContext.setExecutor(exec);
-                exec.execute();
-              }
+              initialize(() => flow.executorFactory!(setFlowElements));
+              startExecution();
             }}
           >
             Start Auth flow

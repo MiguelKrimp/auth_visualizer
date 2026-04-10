@@ -15,8 +15,10 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
 
   async execute(): Promise<void> {
     this.renderCallback(this.renderer.renderInitial());
-    // TODO open popup for registration or authentication
-    const username: string | undefined = 'actualtest2';
+
+    const username = await new Promise<string | undefined>((resolve) => {
+      this.renderCallback(this.renderer.renderWebAuthnLoginPopup((username) => resolve(username)));
+    });
 
     await this.registerStepListener();
 
@@ -24,8 +26,12 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
       ? await this.startRegisterFlow(username)
       : await this.startAuthenticationFlow();
 
+    this.renderCallback(this.renderer.renderSeparator('50px'));
     const docEndPoint = new DocumentEndpoint();
+    this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
     const image = await docEndPoint.get(`Bearer ${loginToken}`);
+    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
+
     this.renderCallback(this.renderer.renderDocumentReceived(image));
   }
 

@@ -1,10 +1,14 @@
 import type { JSX } from 'react';
 import { FaMobileAlt, FaServer } from 'react-icons/fa';
 
+import { WebAuthnLoginPopup } from '../../components/common/WebAuthnLoginPopup';
+import { ClientStep } from '../../components/Content/flowComponents/ClientStep';
 import { CommunicationLine } from '../../components/Content/flowComponents/CommunicationLine';
 import { DeviceLine } from '../../components/Content/flowComponents/DeviceLine';
+import { InteractableStep } from '../../components/Content/flowComponents/InteractableStep';
 import { Separator } from '../../components/Content/flowComponents/Separator';
 import { ServerStep } from '../../components/Content/flowComponents/ServerStep';
+import { EventHandler } from '../../util/EventHandler';
 import { FlowRenderer } from './FlowRenderer';
 
 export class WebAuthnRenderer extends FlowRenderer {
@@ -23,6 +27,25 @@ export class WebAuthnRenderer extends FlowRenderer {
     ]);
 
     return this.allElements;
+  }
+
+  renderWebAuthnLoginPopup(callback: (username?: string) => void) {
+    const eventHandler = new EventHandler<void>();
+    this.addElements([
+      <WebAuthnLoginPopup
+        triggerComponent={
+          <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
+            <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
+          </InteractableStep>
+        }
+        onConfirm={(username) => {
+          callback(username);
+          eventHandler.emit();
+        }}
+      />,
+    ]);
+
+    return [...this.allElements];
   }
 
   renderAuthenticatorStep(text: string) {

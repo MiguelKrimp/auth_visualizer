@@ -1,12 +1,32 @@
 import { Flex, HStack, IconButton, Link, Text } from '@chakra-ui/react';
-import { useContext } from 'react';
+import { useMemo } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { MdRefresh, MdSkipNext } from 'react-icons/md';
+import { useShallow } from 'zustand/shallow';
 
-import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
+import { FlowState, useFlowExecutorStore } from '../common/AuthFlowExecutionContext';
 
 export function Footer() {
-  const executionContext = useContext(AuthFlowExecutionContext);
+  const { flowState, executor, startExecution } = useFlowExecutorStore(
+    useShallow((state) => ({
+      flowState: state.flowState,
+      executor: state.executor,
+      startExecution: state.startExecution,
+    })),
+  );
+
+  const { flowStatus, flowColor } = useMemo(() => {
+    switch (flowState) {
+      case FlowState.Running:
+        return { flowStatus: 'flow execution in progress', flowColor: 'accent1' };
+      case FlowState.Completed:
+        return { flowStatus: 'flow execution completed', flowColor: 'bright' };
+      case FlowState.Failed:
+        return { flowStatus: 'flow execution failed or aborted', flowColor: 'red.500' };
+      default:
+        return { flowStatus: 'waiting for flow execution', flowColor: 'gray.500' };
+    }
+  }, [flowState]);
 
   return (
     <Flex
@@ -24,26 +44,20 @@ export function Footer() {
     >
       <Flex flex={{ base: 'unset', md: 1 }} justify={{ base: 'center', md: 'flex-start' }}>
         <Text fontSize="sm" color="muted" textAlign={{ base: 'center', md: 'left' }}>
-          {/* TODO more info */}
           Status:{' '}
-          {executionContext.getExecutor()
-            ? 'flow execution in progress'
-            : 'waiting for flow execution'}
+          <Text color={flowColor} as="span" fontWeight="bold">
+            {flowStatus}
+          </Text>
         </Text>
       </Flex>
       <Flex flex={{ base: 'unset', md: 1 }} gap={4} justify="center">
         <IconButton
           bg="accent1"
           color="background"
-          disabled={!executionContext.getExecutor()}
+          disabled={!executor}
           rounded="full"
           onClick={() => {
-            executionContext
-              .getExecutor()
-              ?.abort()
-              .finally(() => {
-                executionContext.setExecutor(null);
-              });
+            startExecution();
           }}
         >
           <MdRefresh />
@@ -51,9 +65,9 @@ export function Footer() {
         <IconButton
           bg="accent1"
           color="background"
-          disabled={!executionContext.getExecutor()}
+          disabled={!executor}
           rounded="full"
-          onClick={() => executionContext.getExecutor()?.next()}
+          onClick={() => executor?.next()}
         >
           <MdSkipNext />
         </IconButton>

@@ -11,12 +11,18 @@ import type { JSX } from 'react';
  */
 export class AuthPartiesContainer {
   private elements: JSX.Element[] = [];
+  // enough randomness for our purposes...
+  private id = (Math.random() * 16 ** 16).toString(16);
 
   addElements(elements: JSX.Element[]) {
     this.elements.push(...elements);
   }
 
   render(): JSX.Element {
-    return <div style={{ position: 'relative' }}>{this.elements}</div>;
+    return (
+      <div key={this.id} style={{ position: 'relative' }}>
+        {this.elements}
+      </div>
+    );
   }
 }

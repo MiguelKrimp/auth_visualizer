@@ -1,13 +1,15 @@
 import { Box, Heading, HStack, Separator, Tabs, Text } from '@chakra-ui/react';
-import { useContext } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { flows } from '../../authflow/Flows';
-import { AuthFlowExecutionContext } from '../common/AuthFlowExecutionContext';
+import { useFlowExecutorStore } from '../common/AuthFlowExecutionContext';
 import { AuthflowContent } from './AuthflowContent';
 import { Tab } from './Tab';
 
 export function AuthSelection() {
-  const executionContext = useContext(AuthFlowExecutionContext);
+  const executionContext = useFlowExecutorStore(
+    useShallow((state) => ({ abortExecution: state.abortExecution })),
+  );
 
   return (
     <Box
@@ -48,12 +50,7 @@ export function AuthSelection() {
         overflow="hidden"
         lazyMount
         onValueChange={() => {
-          executionContext
-            .getExecutor()
-            ?.abort()
-            .finally(() => {
-              executionContext.setExecutor(null);
-            });
+          executionContext.abortExecution();
         }}
       >
         <Tabs.List bg="surface" p={0} borderRadius="lg" gapX="1">
