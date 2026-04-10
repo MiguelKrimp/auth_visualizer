@@ -11,18 +11,19 @@ import DataSource from './database/DataSource';
 import { Role } from './database/entities/Role';
 import { userRepository } from './database/entities/User';
 import { EnvironmentVars, validateEnvironmentVars } from './Environment';
+import { UserCleanup } from './services/jobs/UserCleanup';
 import { LoggingService } from './services/LoggingService';
 import { PasswordService } from './services/PasswordService';
+import { SchedulerService } from './services/SchedulerService';
 
 async function main(): Promise<void> {
   validateEnvironmentVars();
 
+  // db stuff
   await DataSource.initialize();
   LoggingService.instance.info('Database connection established');
 
   if (EnvironmentVars.development) {
-    // Create a demo user if it doesn't exist
-
     const demoUser = await userRepository().findOne({
       where: { username: EnvironmentVars.demoUsername },
     });
@@ -36,6 +37,7 @@ async function main(): Promise<void> {
     }
   }
 
+  // api
   const app = express();
 
   app.use(JSONBodyParser);
@@ -50,6 +52,14 @@ async function main(): Promise<void> {
 
   const spySessionServer = new SpySessionServer(server);
   spySessionServer.initialize();
+
+  // jobs
+  const userCleanupJob = new UserCleanup();
+  SchedulerService.getInstance().scheduleJob(
+    userCleanupJob.id,
+    userCleanupJob.cronExpression,
+    userCleanupJob.execute,
+  );
 }
 
 main();
