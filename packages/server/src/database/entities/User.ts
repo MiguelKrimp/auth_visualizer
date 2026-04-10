@@ -9,7 +9,7 @@ export class User {
   @PrimaryColumn()
   username!: string;
 
-  @Column({ nullable: true })
+  @Column()
   passwordHash!: string;
 
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP()' })

@@ -1,26 +1,9 @@
-import { Button, Dialog, Em, Field, Flex, Input, Link } from '@chakra-ui/react';
+import { Button, Dialog, Em, Flex, Link } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 
 import { UserEndpoint } from '../../api/rest/UserEndpoint';
 import { DialogComponent } from './Dialog';
-
-type FieldInputProps = {
-  placeholder: string;
-  type?: string;
-  value: string | undefined;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string | undefined;
-};
-
-function FieldInput({ placeholder, type, value, onChange, error }: FieldInputProps) {
-  return (
-    <Field.Root>
-      <Field.Label>{placeholder}</Field.Label>
-      <Input placeholder={placeholder} type={type} value={value} onChange={onChange} />
-      <Field.HelperText color="red">{error}</Field.HelperText>
-    </Field.Root>
-  );
-}
+import { FieldInput } from './FieldInput';
 
 type LoginButtonsProps = {
   onConfirm: () => void;

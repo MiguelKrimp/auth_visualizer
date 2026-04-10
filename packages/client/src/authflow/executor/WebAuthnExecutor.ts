@@ -5,6 +5,7 @@ import { DocumentEndpoint } from '../../api/rest/DocumentEndpoint';
 import { WebAuthnLoginEndpoint } from '../../api/rest/WebAuthnLoginEndpoint';
 import { WebAuthnRegisterEndpoint } from '../../api/rest/WebAuthnRegisterEndpoint';
 import { SpySession } from '../../api/spySession/SpySession';
+import { encodeBasicCredentials } from '../../util/EncodingUtil';
 import { WebAuthnRenderer } from '../renderer/WebAuthnRenderer';
 import { AbstractFlowExecutor } from './AbstractFlowExecutor';
 
@@ -16,14 +17,16 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
   async execute(): Promise<void> {
     this.renderCallback(this.renderer.renderInitial());
 
-    const username = await new Promise<string | undefined>((resolve) => {
-      this.renderCallback(this.renderer.renderWebAuthnLoginPopup((username) => resolve(username)));
-    });
+    const credentials = await new Promise<{ username: string; password: string } | undefined>(
+      (resolve) => {
+        this.renderCallback(this.renderer.renderWebAuthnLoginPopup((cred) => resolve(cred)));
+      },
+    );
 
     await this.registerStepListener();
 
-    const loginToken = username
-      ? await this.startRegisterFlow(username)
+    const loginToken = credentials
+      ? await this.startRegisterFlow(credentials)
       : await this.startAuthenticationFlow();
 
     this.renderCallback(this.renderer.renderSeparator('50px'));
@@ -35,12 +38,14 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
     this.renderCallback(this.renderer.renderDocumentReceived(image));
   }
 
-  private async startRegisterFlow(username: string) {
+  private async startRegisterFlow({ username, password }: { username: string; password: string }) {
     const spy = await SpySession.get();
     const registerEndPoint = new WebAuthnRegisterEndpoint();
 
+    const auth = `Basic ${encodeBasicCredentials(username, password)}`;
+
     this.renderCallback(this.renderer.renderLineFromClient(`GET ${registerEndPoint.getPath()}`));
-    const { options, token } = await registerEndPoint.get(username, spy.sessionId);
+    const { options, token } = await registerEndPoint.get(auth, spy.sessionId);
     this.renderCallback(this.renderer.renderLineFromServer('Received registration options'));
     this.renderCallback(this.renderer.renderSeparator('20px'));
 
@@ -55,7 +60,7 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
 
     this.renderCallback(this.renderer.renderSecondClientServer());
     this.renderCallback(this.renderer.renderLineFromClient(`POST ${registerEndPoint.getPath()}`));
-    const loginToken = await registerEndPoint.post(token, credential, spy.sessionId);
+    const loginToken = await registerEndPoint.post(auth, token, credential, spy.sessionId);
     this.renderCallback(this.renderer.renderLineFromServer('Received JWT for authentication'));
 
     return loginToken;

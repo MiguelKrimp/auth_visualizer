@@ -29,7 +29,7 @@ export class WebAuthnRenderer extends FlowRenderer {
     return this.allElements;
   }
 
-  renderWebAuthnLoginPopup(callback: (username?: string) => void) {
+  renderWebAuthnLoginPopup(callback: (cred?: { username: string; password: string }) => void) {
     const eventHandler = new EventHandler<void>();
     this.addElements([
       <WebAuthnLoginPopup
@@ -38,8 +38,8 @@ export class WebAuthnRenderer extends FlowRenderer {
             <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
           </InteractableStep>
         }
-        onConfirm={(username) => {
-          callback(username);
+        onConfirm={(cred) => {
+          callback(cred);
           eventHandler.emit();
         }}
       />,

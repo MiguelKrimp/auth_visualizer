@@ -17,7 +17,7 @@ export const StepLabels: Record<StepIDs, string> = {
   CreateRegistrationOptions: 'Create registration options',
   VerifiedRegisterToken: 'Verify registration token containing original challenge',
   VerifyRegisterChallenge: 'Verify registration challenge response',
-  CreateUserAndAuthenticator: 'Create user and authenticator in database',
+  SaveAuthenticator: 'Save authenticator in database',
   // passkey login
   CreateAuthenticationOptions: 'Create authentication options',
   VerifiedChallengeToken: 'Verify challenge token containing original challenge',

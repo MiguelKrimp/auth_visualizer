@@ -22,6 +22,7 @@ async function main(): Promise<void> {
 
   if (EnvironmentVars.development) {
     // Create a demo user if it doesn't exist
+
     const demoUser = await userRepository().findOne({
       where: { username: EnvironmentVars.demoUsername },
     });

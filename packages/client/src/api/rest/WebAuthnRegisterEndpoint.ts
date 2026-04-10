@@ -11,14 +11,15 @@ export class WebAuthnRegisterEndpoint {
     return '/login/webauthn/register';
   }
 
-  async get(username: string, spySessionId: string) {
-    const response = await fetch(
-      REST_HOST + this.getPath() + `?username=${encodeURIComponent(username)}`,
-      {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', [SPY_SESSION_HEADER]: spySessionId },
+  async get(auth: string, spySessionId: string) {
+    const response = await fetch(REST_HOST + this.getPath(), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        [SPY_SESSION_HEADER]: spySessionId,
+        Authorization: auth,
       },
-    );
+    });
     if (!response.ok) {
       throw new Error(`Failed to get registration options: ${response.statusText}`);
     }
@@ -29,13 +30,18 @@ export class WebAuthnRegisterEndpoint {
   }
 
   async post(
+    auth: string,
     token: string,
     credential: RegistrationResponseJSON,
     spySessionId: string,
   ): Promise<string> {
     const registerResp = await fetch(REST_HOST + this.getPath(), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', [SPY_SESSION_HEADER]: spySessionId },
+      headers: {
+        'Content-Type': 'application/json',
+        [SPY_SESSION_HEADER]: spySessionId,
+        Authorization: auth,
+      },
       body: JSON.stringify({ token, response: credential }),
     });
     return registerResp.text();

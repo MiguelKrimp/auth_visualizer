@@ -2,11 +2,12 @@ import { PasskeyRegisterSteps } from '@auth-visualizer/common/authflow/steps/res
 import { RegistrationResponseJSON } from '@simplewebauthn/server';
 import { Express } from 'express';
 
-import { Role } from '../../../../database/entities/Role';
-import { userRepository } from '../../../../database/entities/User';
+import { authenticatorRepository } from '../../../../database/entities/Authenticator';
 import { JWTAge, JWTAudience, JWTService } from '../../../../services/JWTService';
 import { PasskeyService } from '../../../../services/PasskeyService';
 import { Authenticator } from '../../../middleware/authentication/Authenticator';
+import { BasicAuthenticator } from '../../../middleware/authentication/BasicAuthenticator';
+import { JWTAuthenticator } from '../../../middleware/authentication/JWTAuthenticator';
 import { InteractiveResource } from '../../InteractiveResource';
 
 export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegisterSteps> {
@@ -15,17 +16,17 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
   }
 
   getAuthenticators(): Authenticator[] {
-    return [];
+    return [new BasicAuthenticator(), new JWTAuthenticator()];
   }
 
   bind(app: Express): void {
     app.get(
       this.getPath(),
       this.injectSpySession(async (req, res, spy) => {
-        const username = req.query.username as string;
+        const username = req.principal?.username;
 
         if (!username) {
-          res.status(400).json({ error: 'Username is required' });
+          res.status(401).json({ error: 'Unauthorized' });
           return;
         }
 
@@ -85,25 +86,24 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
           return;
         }
 
-        const user = userRepository().create({
-          username: decodedToken.sub,
-          role: Role.TempUser,
-          authenticators: [
-            {
-              id: registrationResult.registrationInfo.credential.id,
-              publicKey: registrationResult.registrationInfo.credential.publicKey,
-              counter: registrationResult.registrationInfo.credential.counter,
-            },
-          ],
+        const authenticator = authenticatorRepository().create({
+          id: registrationResult.registrationInfo.credential.id,
+          publicKey: registrationResult.registrationInfo.credential.publicKey,
+          counter: registrationResult.registrationInfo.credential.counter,
+          user: {
+            username: decodedToken.sub,
+          },
         });
-        await userRepository().save(user);
-        await spy.step('CreateUserAndAuthenticator', {
-          userId: user.username,
+
+        await authenticatorRepository().insert(authenticator);
+
+        await spy.step('SaveAuthenticator', {
+          userId: decodedToken.sub,
           authenticatorId: registrationResult.registrationInfo.credential.id,
         });
 
         const loginToken = JWTService.createToken(
-          JWTService.createLoginClaims(user.username),
+          JWTService.createLoginClaims(decodedToken.sub),
           JWTAge.Short,
         );
         res

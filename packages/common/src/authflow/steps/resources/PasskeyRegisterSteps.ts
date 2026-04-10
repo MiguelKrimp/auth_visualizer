@@ -18,7 +18,7 @@ export type PasskeyRegisterSteps = ValidAuthSteps<{
       verificationResult: any;
     };
   };
-  CreateUserAndAuthenticator: {
+  SaveAuthenticator: {
     data: {
       userId: string;
       authenticatorId: string;
