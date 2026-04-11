@@ -2,11 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 
 import { LoggingService } from '../../../services/LoggingService';
 
+export const RequestLogger = LoggingService.withName('RequestLogger');
+
 function logError(error: Error, req: Request, res: Response, next: NextFunction): void {
-  LoggingService.instance.error(
-    `Error in request ${req.method} ${req.path}: ${error.message}`,
-    error,
-  );
+  RequestLogger.error(error, `Error in request ${req.method} ${req.path}`);
   next(error);
 }
 

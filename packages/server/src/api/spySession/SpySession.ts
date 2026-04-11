@@ -8,7 +8,7 @@ import {
 import { Socket } from 'socket.io';
 import { NIL, v4 as uuidV4 } from 'uuid';
 
-import { LoggingService } from '../../services/LoggingService';
+import { SpySessionLogger } from './SpySessionServer';
 
 export interface ISpySession<T extends ValidAuthSteps = ValidAuthSteps> {
   id: string;
@@ -39,7 +39,7 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
         this.pendingStepReject();
       }
 
-      LoggingService.instance.info(`Spy session disconnected: ${this.id}`);
+      SpySessionLogger.info(`Spy session disconnected: ${this.id}`);
       callback();
     });
   }

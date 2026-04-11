@@ -8,6 +8,7 @@ import { JWTAuthenticator } from '../../../middleware/authentication/JWTAuthenti
 import { assertAdmin } from '../../../middleware/authorization/assertAdmin';
 import { SecuredResource } from '../../SecuredResource';
 
+const Logger = LoggingService.withName('CatPicResource');
 export class CatPicResource extends SecuredResource {
   getPath(): string {
     return '/documents/catpics';
@@ -42,7 +43,7 @@ export class CatPicResource extends SecuredResource {
       const catPic = catPicsRepository().create({ dataUrl, name: label || 'Unnamed cutie' });
       await catPicsRepository().save(catPic);
 
-      LoggingService.instance.info(`New cat pic added: ${catPic.name}`);
+      Logger.info(`New cat pic added: ${catPic.name}`);
 
       res.status(201).json(catPic);
     });

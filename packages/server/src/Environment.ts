@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 const EnvironmentVars = {
   // client
   clientOrigin: process.env.CLIENT_ORIGIN as string,
@@ -16,6 +18,12 @@ const EnvironmentVars = {
   dbPort: Number(process.env.DB_PORT),
   dbUsername: process.env.DB_USERNAME as string,
   dbPassword: process.env.DB_PASSWORD as string,
+
+  // logging
+  logLevel: process.env.LOG_LEVEL || (process.env.DEVELOPMENT === 'true' ? 'debug' : 'info'),
+  shouldWriteLogFile: process.env.LOG_TO_FILE !== 'false',
+  logDirectory: process.env.LOG_DIR || path.resolve(process.cwd(), 'logs'),
+  logFileName: process.env.LOG_FILE_NAME || 'server.log',
 };
 
 function validateEnvironmentVars(): void {
@@ -25,5 +33,6 @@ function validateEnvironmentVars(): void {
     }
   }
 }
+validateEnvironmentVars();
 
-export { EnvironmentVars, validateEnvironmentVars };
+export { EnvironmentVars };

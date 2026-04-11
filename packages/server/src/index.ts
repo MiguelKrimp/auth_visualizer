@@ -6,23 +6,24 @@ import { CORSFilter } from './api/middleware/static/CORSFilter';
 import { ErrorLoggingMiddleware } from './api/middleware/static/ErrorLogging';
 import { JSONBodyParser } from './api/middleware/static/JSONBodyParser';
 import { JWTErrorCatchMiddleware } from './api/middleware/static/JWTErrorCatch';
+import { RequestLoggingMiddleware } from './api/middleware/static/RequestLogging';
 import { registerResources } from './api/ResourceRegister';
 import { SpySessionServer } from './api/spySession/SpySessionServer';
 import DataSource from './database/DataSource';
 import { Role } from './database/entities/Role';
 import { userRepository } from './database/entities/User';
-import { EnvironmentVars, validateEnvironmentVars } from './Environment';
+import { EnvironmentVars } from './Environment';
 import { UserCleanup } from './services/jobs/UserCleanup';
 import { LoggingService } from './services/LoggingService';
 import { PasswordService } from './services/PasswordService';
 import { SchedulerService } from './services/SchedulerService';
 
-async function main(): Promise<void> {
-  validateEnvironmentVars();
+const Logger = LoggingService.withName('Initialization');
 
+async function main(): Promise<void> {
   // db stuff
   await DataSource.initialize();
-  LoggingService.instance.info('Database connection established');
+  Logger.info('Database connection established');
 
   if (EnvironmentVars.development) {
     const demoUser = await userRepository().findOne({
@@ -34,13 +35,14 @@ async function main(): Promise<void> {
         passwordHash: PasswordService.hashPassword(EnvironmentVars.demoPassword),
         role: Role.Admin,
       });
-      LoggingService.instance.info(`Demo user '${EnvironmentVars.demoUsername}' created`);
+      Logger.info(`Demo user '${EnvironmentVars.demoUsername}' created`);
     }
   }
 
   // api
   const app = express();
 
+  app.use(RequestLoggingMiddleware);
   app.use(JSONBodyParser);
   app.use(CORSFilter);
 
@@ -50,7 +52,7 @@ async function main(): Promise<void> {
   app.use(JWTErrorCatchMiddleware);
 
   const server = app.listen(EnvironmentVars.port);
-  LoggingService.instance.info(`Server started on port ${EnvironmentVars.port}`);
+  Logger.info(`Server started on port ${EnvironmentVars.port}`);
 
   const spySessionServer = new SpySessionServer(server);
   spySessionServer.initialize();

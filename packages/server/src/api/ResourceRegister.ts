@@ -9,6 +9,8 @@ import { PasskeyRegisterResource } from './ressources/login/webauthn/PasskeyRegi
 import { SecuredResource } from './ressources/SecuredResource';
 import { UserResource } from './ressources/users/UserResource';
 
+const Logger = LoggingService.withName('ResourceRegister');
+
 export function registerResources(app: Express): void {
   const resources: SecuredResource[] = [
     new JWTLoginResource(),
@@ -27,5 +29,5 @@ function register(app: Express, resource: SecuredResource): void {
   const authMiddleware = new AuthenticationMiddleware(resource.getAuthenticators());
   app.use(path, authMiddleware.handle.bind(authMiddleware));
   resource.bind(app);
-  LoggingService.instance.info(`Registered resource at path ${path}`);
+  Logger.info(`Registered resource at path ${path}`);
 }

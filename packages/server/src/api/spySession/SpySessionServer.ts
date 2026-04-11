@@ -11,13 +11,15 @@ import { SpySessionBroker } from './SpySessionBroker';
 
 type SpySocketServer = SocketIOServer<ClientToServerEvents, ServerToClientEvents>;
 
+export const SpySessionLogger = LoggingService.withName('SpySession');
+
 export class SpySessionServer {
   ioServer: SpySocketServer;
 
   constructor(server: Server) {
     this.ioServer = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(server, {});
     this.ioServer.engine.on('connection_error', (err) => {
-      LoggingService.instance.error('WebSocket connection error:', err);
+      SpySessionLogger.error('WebSocket connection error:', err);
     });
   }
 
@@ -25,8 +27,8 @@ export class SpySessionServer {
     const spyNS = this.ioServer.of('/spy');
     spyNS.on('connection', (socket) => {
       const session = SpySessionBroker.getInstance().createSession(socket);
-      LoggingService.instance.info(`New spy session connected: ${session.id}`);
+      SpySessionLogger.info(`New spy session connected: ${session.id}`);
     });
-    LoggingService.instance.info('Spy session websocket initialized on /spy');
+    SpySessionLogger.info('Spy session websocket initialized on /spy');
   }
 }

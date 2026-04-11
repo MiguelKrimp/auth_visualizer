@@ -4,6 +4,8 @@ import { Role } from '../../database/entities/Role';
 import { userRepository } from '../../database/entities/User';
 import { LoggingService } from '../LoggingService';
 
+const Logger = LoggingService.withName('UserCleanupJob');
+
 export class UserCleanup {
   readonly id: string = 'user-cleanup';
   readonly cronExpression: string = '*/5 * * * *';
@@ -16,9 +18,7 @@ export class UserCleanup {
       role: Role.TempUser,
     });
     if (result.affected !== undefined) {
-      LoggingService.instance.info(
-        `User cleanup job executed. Deleted ${result.affected} temporary users.`,
-      );
+      Logger.info(`User cleanup job executed. Deleted ${result.affected} temporary users.`);
     }
   }
 }

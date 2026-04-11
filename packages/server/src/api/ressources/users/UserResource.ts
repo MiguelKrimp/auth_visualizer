@@ -5,7 +5,7 @@ import { LoggingService } from '../../../services/LoggingService';
 import { PasswordService } from '../../../services/PasswordService';
 import { Authenticator } from '../../middleware/authentication/Authenticator';
 import { SecuredResource } from '../SecuredResource';
-
+const Logger = LoggingService.withName('UserResource');
 export class UserResource extends SecuredResource {
   getPath(): string {
     return '/users';
@@ -34,7 +34,7 @@ export class UserResource extends SecuredResource {
       newUser.passwordHash = PasswordService.hashPassword(password);
       await userRepository().insert(newUser);
 
-      LoggingService.instance.info(`Created new user: ${username}`);
+      Logger.info(`Created new user: ${username}`);
 
       res.status(201).send('User created');
     });
