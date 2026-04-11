@@ -5,6 +5,7 @@ import express from 'express';
 import { CORSFilter } from './api/middleware/static/CORSFilter';
 import { ErrorLoggingMiddleware } from './api/middleware/static/ErrorLogging';
 import { JSONBodyParser } from './api/middleware/static/JSONBodyParser';
+import { JWTErrorCatchMiddleware } from './api/middleware/static/JWTErrorCatch';
 import { registerResources } from './api/ResourceRegister';
 import { SpySessionServer } from './api/spySession/SpySessionServer';
 import DataSource from './database/DataSource';
@@ -46,6 +47,7 @@ async function main(): Promise<void> {
   registerResources(app);
 
   app.use(ErrorLoggingMiddleware);
+  app.use(JWTErrorCatchMiddleware);
 
   const server = app.listen(EnvironmentVars.port);
   LoggingService.instance.info(`Server started on port ${EnvironmentVars.port}`);

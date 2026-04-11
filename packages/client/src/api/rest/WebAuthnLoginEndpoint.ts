@@ -29,15 +29,15 @@ export class WebAuthnLoginEndpoint {
   getPostMessageData(token: string, credential: AuthenticationResponseJSON, spySessionId: string) {
     return {
       headers: { 'Content-Type': 'application/json', [SPY_SESSION_HEADER]: spySessionId },
-      body: JSON.stringify({ token, response: credential }),
+      body: { token, response: credential },
     };
   }
 
-  async post(headers: HeadersInit, body: string): Promise<string> {
+  async post(headers: HeadersInit, body: any): Promise<string> {
     const registerResp = await fetch(REST_HOST + this.getPath(), {
       method: 'POST',
       headers,
-      body,
+      body: JSON.stringify(body),
     });
     if (!registerResp.ok) {
       await throwResponseError(registerResp);

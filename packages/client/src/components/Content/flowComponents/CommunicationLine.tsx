@@ -15,7 +15,7 @@ export function CommunicationLine({ x1, x2, color, text, msgData }: Communicatio
   return (
     <>
       <Center marginLeft={x1} marginRight={x2} flexDir="column">
-        <Center flexDir="row" gap={2}>
+        <Center flexDir="row" gap={2} marginLeft={2} marginRight={2}>
           {text}
           {msgData && (
             <Tooltip
@@ -23,7 +23,7 @@ export function CommunicationLine({ x1, x2, color, text, msgData }: Communicatio
                 <CodeBlock.Root
                   mt={1}
                   maxH="30vh"
-                  maxW="25vw"
+                  maxW="50vw"
                   overflow="auto"
                   code={JSON.stringify(msgData, undefined, 2)}
                   size="sm"

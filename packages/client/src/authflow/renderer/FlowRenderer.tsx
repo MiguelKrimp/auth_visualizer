@@ -161,7 +161,7 @@ export class FlowRenderer {
   }
 
   renderLineFromServer(text: string, data: any): void {
-    this.lastLineDestination = FlowRenderer.LEFTX;
-    return this.renderLine(FlowRenderer.SERVER_COLOR, text, FlowRenderer.LEFTX, data);
+    this.lastLineDestination = undefined;
+    return this.renderLine(FlowRenderer.SERVER_COLOR, text, FlowRenderer.RIGHTX, data);
   }
 }

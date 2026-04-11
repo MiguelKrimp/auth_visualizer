@@ -77,7 +77,7 @@ export class WebAuthnRenderer extends FlowRenderer {
   }
 
   renderLineFromAuthToClient(text: string, data: any): void {
-    this.lastLineDestination = FlowRenderer.LEFTX;
+    this.lastLineDestination = undefined;
     return this.renderLine(FlowRenderer.THIRD_PARTY_COLOR, text, FlowRenderer.THIRD_PARTYX, data);
   }
 }

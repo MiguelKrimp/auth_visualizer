@@ -65,7 +65,8 @@ export class PasskeyRegisterResource extends InteractiveResource<PasskeyRegister
         if (
           decodedToken.aud !== JWTAudience.PasskeyRegistration ||
           !decodedToken.challenge ||
-          !decodedToken.sub
+          !decodedToken.sub ||
+          req.principal?.username !== decodedToken.sub
         ) {
           res.status(400).send('Invalid token');
           return;

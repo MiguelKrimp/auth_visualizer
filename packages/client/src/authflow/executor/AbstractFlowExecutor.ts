@@ -1,4 +1,5 @@
 import { SpySession } from '../../api/spySession/SpySession';
+import { ResponseError } from '../../api/util';
 import type { FlowRenderer } from '../renderer/FlowRenderer';
 
 export abstract class AbstractFlowExecutor<Renderer extends FlowRenderer = FlowRenderer> {
@@ -19,7 +20,9 @@ export abstract class AbstractFlowExecutor<Renderer extends FlowRenderer = FlowR
 
   start(): Promise<void> {
     return this.execute().catch((e) => {
-      this.renderer.renderErrorLine(e instanceof Error ? e.message : String(e), undefined);
+      const msg = e instanceof Error ? e.message : String(e);
+      const data = e instanceof ResponseError ? e.detailMsg : undefined;
+      this.renderer.renderErrorLine(msg, data);
       this.renderer.renderSeparator('50px');
       throw e;
     });

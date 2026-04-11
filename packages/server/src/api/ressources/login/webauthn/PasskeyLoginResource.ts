@@ -80,7 +80,7 @@ export class PasskeyLoginResource extends InteractiveResource<PasskeyLoginSteps>
           authenticatorFound: !!authenticator,
         });
         if (!authenticator) {
-          res.status(404).send('Authenticator not found');
+          res.status(400).send('Authentication verification failed');
           return;
         }
 

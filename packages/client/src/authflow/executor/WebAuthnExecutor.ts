@@ -27,8 +27,12 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
 
     this.renderer.renderSeparator('50px');
 
+    await this.getDocumentWithToken(loginToken);
+  }
+
+  private async getDocumentWithToken(token: string) {
     const docEndPoint = new DocumentEndpoint();
-    const getData = docEndPoint.getGetMessageData(`Bearer ${loginToken}`);
+    const getData = docEndPoint.getGetMessageData(`Bearer ${token}`);
     this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`, getData);
     const image = await docEndPoint.get(getData.headers);
     this.renderer.renderLineFromServer('Image received', { image });
@@ -41,24 +45,31 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
 
     const auth = `Basic ${encodeBasicCredentials(username, password)}`;
 
+    // get registration options from server
     const registerEndPoint = new WebAuthnRegisterEndpoint();
     const getData = registerEndPoint.getGetMessageData(auth, spy.sessionId);
     this.renderer.renderLineFromClient(`GET ${registerEndPoint.getPath()}`, getData);
     const { options, token } = await registerEndPoint.get(getData.headers);
     this.renderer.renderLineFromServer('Received registration options', { options, token });
 
-    this.renderer.renderSeparator('20px');
+    this.renderer.renderStepInfoClient('Calling WebAuthn API');
+    await this.pause();
 
+    // call webauthn api
     this.renderer.renderClientAndAuthenticator();
-    this.renderer.renderLineFromClientToAuth('Call WebAuthn API', { options });
+    this.renderer.renderLineFromClientToAuth('Calling navigator.credentials.create...', {
+      options,
+    });
     this.renderer.renderAuthenticatorStep('Waiting for user interaction...');
     const credential = await startRegistration({ optionsJSON: options });
     this.renderer.renderLineFromAuthToClient('Received credential from authenticator', {
       credential,
     });
 
-    this.renderer.renderSeparator('20px');
+    this.renderer.renderStepInfoClient('Send new credential to server');
+    await this.pause();
 
+    // send registration result to server
     this.renderer.renderSecondClientServer();
     const postData = registerEndPoint.getPostMessageData(auth, token, credential, spy.sessionId);
     this.renderer.renderLineFromClient(`POST ${registerEndPoint.getPath()}`, postData);
@@ -71,21 +82,26 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
   private async startAuthenticationFlow() {
     const spy = await SpySession.get();
 
+    // get authentication options from server
     const loginEndPoint = new WebAuthnLoginEndpoint();
     this.renderer.renderLineFromClient(`GET ${loginEndPoint.getPath()}`, undefined);
     const { options, token } = await loginEndPoint.get(spy.sessionId);
     this.renderer.renderLineFromServer('Received authentication options', { options, token });
 
-    this.renderer.renderSeparator('20px');
+    this.renderer.renderStepInfoClient('Calling WebAuthn API');
+    await this.pause();
 
+    // call webauthn api
     this.renderer.renderClientAndAuthenticator();
-    this.renderer.renderLineFromClientToAuth('Call WebAuthn API', { options });
+    this.renderer.renderLineFromClientToAuth('Calling navigator.credentials.get...', { options });
     this.renderer.renderAuthenticatorStep('Waiting for user interaction...');
     const credential = await startAuthentication({ optionsJSON: options });
     this.renderer.renderLineFromAuthToClient('Authenticator signed challenge', { credential });
 
-    this.renderer.renderSeparator('20px');
+    this.renderer.renderStepInfoClient('Send signed challenge to server');
+    await this.pause();
 
+    // send authentication result to server
     this.renderer.renderSecondClientServer();
     const postData = loginEndPoint.getPostMessageData(token, credential, spy.sessionId);
     this.renderer.renderLineFromClient(`POST ${loginEndPoint.getPath()}`, postData);
