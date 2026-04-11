@@ -8,14 +8,20 @@ export class JWTEndpoint {
     return '/login/jwt';
   }
 
-  post(auth: string, spySessionId: string): Promise<string> {
-    return fetch(REST_HOST + this.getPath(), {
-      method: 'POST',
+  getPostMessageData(auth: string, spySessionId: string): { headers: HeadersInit } {
+    return {
       headers: {
         Authorization: auth,
         'Content-Type': 'text/plain',
         [SPY_SESSION_HEADER]: spySessionId,
       },
+    };
+  }
+
+  post(headers: HeadersInit): Promise<string> {
+    return fetch(REST_HOST + this.getPath(), {
+      method: 'POST',
+      headers: headers,
     }).then(async (response) => {
       if (!response.ok) {
         await throwResponseError(response);

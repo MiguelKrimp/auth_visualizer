@@ -1,9 +1,7 @@
-import type { JSX } from 'react';
 import { FaMobileAlt, FaServer } from 'react-icons/fa';
 
 import { WebAuthnLoginPopup } from '../../components/common/WebAuthnLoginPopup';
 import { ClientStep } from '../../components/Content/flowComponents/ClientStep';
-import { CommunicationLine } from '../../components/Content/flowComponents/CommunicationLine';
 import { DeviceLine } from '../../components/Content/flowComponents/DeviceLine';
 import { InteractableStep } from '../../components/Content/flowComponents/InteractableStep';
 import { Separator } from '../../components/Content/flowComponents/Separator';
@@ -26,32 +24,34 @@ export class WebAuthnRenderer extends FlowRenderer {
       <Separator height="100px" />,
     ]);
 
-    return this.allElements;
+    this.renderCallback(this.allElements);
   }
 
-  renderWebAuthnLoginPopup(callback: (cred?: { username: string; password: string }) => void) {
-    const eventHandler = new EventHandler<void>();
-    this.addElements([
-      <WebAuthnLoginPopup
-        triggerComponent={
-          <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
-            <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
-          </InteractableStep>
-        }
-        onConfirm={(cred) => {
-          callback(cred);
-          eventHandler.emit();
-        }}
-      />,
-    ]);
+  async renderWebAuthnLoginPopup(): Promise<{ username: string; password: string } | undefined> {
+    return new Promise<{ username: string; password: string } | undefined>((resolve) => {
+      const eventHandler = new EventHandler<void>();
+      this.addElements([
+        <WebAuthnLoginPopup
+          triggerComponent={
+            <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
+              <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
+            </InteractableStep>
+          }
+          onConfirm={(cred) => {
+            resolve(cred);
+            eventHandler.emit();
+          }}
+        />,
+      ]);
 
-    return [...this.allElements];
+      this.renderCallback(this.allElements);
+    });
   }
 
   renderAuthenticatorStep(text: string) {
     this.addElements([<ServerStep stepLabel={text} x={FlowRenderer.THIRD_PARTYX} />]);
 
-    return [...this.allElements];
+    this.renderCallback(this.allElements);
   }
 
   renderSecondClientServer() {
@@ -68,27 +68,16 @@ export class WebAuthnRenderer extends FlowRenderer {
       <Separator height="100px" />,
     ]);
 
-    return this.allElements;
+    this.renderCallback(this.allElements);
   }
 
-  private renderThirdPartyLine(color: string, text: string) {
-    this.addElements([
-      <CommunicationLine
-        x1={FlowRenderer.LEFTX}
-        x2={`calc(100% - ${FlowRenderer.THIRD_PARTYX})`}
-        color={color}
-        text={text}
-      />,
-    ]);
-
-    return [...this.allElements];
+  renderLineFromClientToAuth(text: string, data: any): void {
+    this.lastLineDestination = FlowRenderer.THIRD_PARTYX;
+    return this.renderLine(FlowRenderer.CLIENT_COLOR, text, FlowRenderer.THIRD_PARTYX, data);
   }
 
-  renderLineFromClientToAuth(text: string): JSX.Element[] {
-    return this.renderThirdPartyLine(FlowRenderer.CLIENT_COLOR, text);
-  }
-
-  renderLineFromAuthToClient(text: string): JSX.Element[] {
-    return this.renderThirdPartyLine(FlowRenderer.THIRD_PARTY_COLOR, text);
+  renderLineFromAuthToClient(text: string, data: any): void {
+    this.lastLineDestination = FlowRenderer.LEFTX;
+    return this.renderLine(FlowRenderer.THIRD_PARTY_COLOR, text, FlowRenderer.THIRD_PARTYX, data);
   }
 }

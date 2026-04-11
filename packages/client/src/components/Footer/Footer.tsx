@@ -65,7 +65,7 @@ export function Footer() {
         <IconButton
           bg="accent1"
           color="background"
-          disabled={!executor}
+          disabled={flowState !== FlowState.Running}
           rounded="full"
           onClick={() => executor?.next()}
         >

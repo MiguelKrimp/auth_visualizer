@@ -12,14 +12,20 @@ export class WebAuthnRegisterEndpoint {
     return '/login/webauthn/register';
   }
 
-  async get(auth: string, spySessionId: string) {
-    const response = await fetch(REST_HOST + this.getPath(), {
-      method: 'GET',
+  getGetMessageData(auth: string, spySessionId: string) {
+    return {
       headers: {
         'Content-Type': 'application/json',
         [SPY_SESSION_HEADER]: spySessionId,
         Authorization: auth,
       },
+    };
+  }
+
+  async get(headers: HeadersInit) {
+    const response = await fetch(REST_HOST + this.getPath(), {
+      method: 'GET',
+      headers,
     });
     if (!response.ok) {
       await throwResponseError(response);
@@ -30,20 +36,27 @@ export class WebAuthnRegisterEndpoint {
     }>;
   }
 
-  async post(
+  getPostMessageData(
     auth: string,
     token: string,
     credential: RegistrationResponseJSON,
     spySessionId: string,
-  ): Promise<string> {
-    const registerResp = await fetch(REST_HOST + this.getPath(), {
-      method: 'POST',
+  ) {
+    return {
       headers: {
         'Content-Type': 'application/json',
         [SPY_SESSION_HEADER]: spySessionId,
         Authorization: auth,
       },
       body: JSON.stringify({ token, response: credential }),
+    };
+  }
+
+  async post(headers: HeadersInit, body: string): Promise<string> {
+    const registerResp = await fetch(REST_HOST + this.getPath(), {
+      method: 'POST',
+      headers,
+      body,
     });
     if (!registerResp.ok) {
       await throwResponseError(registerResp);

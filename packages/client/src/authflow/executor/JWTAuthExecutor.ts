@@ -7,59 +7,47 @@ import { encodeBasicCredentials } from '../../util/EncodingUtil';
 import { FlowRenderer } from '../renderer/FlowRenderer';
 import { AbstractFlowExecutor } from './AbstractFlowExecutor';
 
-export class JWTAuthExecutor extends AbstractFlowExecutor {
+export class JWTAuthExecutor extends AbstractFlowExecutor<FlowRenderer> {
   constructor(renderCallback: (elements: JSX.Element[]) => void) {
-    super(renderCallback, new FlowRenderer());
+    super(new FlowRenderer(renderCallback));
   }
 
   async execute(): Promise<void> {
-    this.renderCallback(this.renderer.renderInitial());
+    this.renderer.renderInitial();
 
-    const { username, password } = await new Promise<{ username: string; password: string }>(
-      (resolve) => {
-        this.renderCallback(
-          this.renderer.renderLoginStart((username, password) => {
-            resolve({ username, password });
-          }),
-        );
-      },
-    );
-
-    const spy = await SpySession.get();
-
+    const { username, password } = await this.renderer.renderLoginStart();
     const credentials = encodeBasicCredentials(username, password);
     const authHeader = `Basic ${credentials}`;
 
+    const spy = await SpySession.get();
     await this.registerStepListener();
 
     const jwtEndPoint = new JWTEndpoint();
+    const postMessageData = jwtEndPoint.getPostMessageData(authHeader, spy.sessionId);
+    this.renderer.renderLineFromClient(`POST ${jwtEndPoint.getPath()}`, postMessageData);
+    const jwt = await jwtEndPoint.post(postMessageData.headers);
+    this.renderer.renderLineFromServer('Received JWT', { jwt });
 
-    this.renderCallback(this.renderer.renderLineFromClient(`POST ${jwtEndPoint.getPath()}`));
-    const jwt = await jwtEndPoint.post(authHeader, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received JWT'));
-
-    this.renderCallback(this.renderer.renderStepInfoClient('Using JWT for authentication'));
+    this.renderer.renderStepInfoClient('Using JWT for authentication');
     await this.pause();
 
     await this.getDocumentLoop(jwt, spy.sessionId);
 
-    this.renderCallback(this.renderer.renderSeparator('50px'));
+    this.renderer.renderSeparator('50px');
   }
 
   async getDocumentLoop(jwt: string, spySessionId: string): Promise<void> {
     const docEndPoint = new DocumentEndpoint();
-    this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
-    const image = await docEndPoint.get(`Bearer ${jwt}`, spySessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
+    const getMessageData = docEndPoint.getGetMessageData(`Bearer ${jwt}`, spySessionId);
+    this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`, getMessageData);
+    const image = await docEndPoint.get(getMessageData.headers);
+    this.renderer.renderLineFromServer('Image received', { image });
 
-    this.renderCallback(this.renderer.renderDocumentReceived(image));
-
-    this.renderCallback(
-      this.renderer.renderStepInfoClient(
-        'Got more cat pics?',
-        undefined,
-        this.getDocumentLoop.bind(this, jwt, spySessionId),
-      ),
+    this.renderer.renderDocumentReceived(image);
+    this.renderer.renderStepInfoClient(
+      'Got more cat pics?',
+      undefined,
+      this.getDocumentLoop.bind(this, jwt, spySessionId),
     );
   }
 }

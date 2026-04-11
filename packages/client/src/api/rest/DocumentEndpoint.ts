@@ -8,7 +8,7 @@ export class DocumentEndpoint {
     return '/documents/catpics';
   }
 
-  get(auth: string, spySessionId?: string): Promise<string> {
+  getGetMessageData(auth: string, spySessionId?: string): { headers: HeadersInit } {
     const headers: HeadersInit = {
       Authorization: auth,
       'Content-Type': 'text/plain',
@@ -16,7 +16,10 @@ export class DocumentEndpoint {
     if (spySessionId) {
       headers[SPY_SESSION_HEADER] = spySessionId;
     }
+    return { headers };
+  }
 
+  get(headers: HeadersInit): Promise<string> {
     return fetch(REST_HOST + this.getPath(), {
       method: 'GET',
       headers: headers,

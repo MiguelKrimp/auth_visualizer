@@ -1,32 +1,26 @@
-import type { JSX } from 'react';
-
 import { SpySession } from '../../api/spySession/SpySession';
 import type { FlowRenderer } from '../renderer/FlowRenderer';
 
 export abstract class AbstractFlowExecutor<Renderer extends FlowRenderer = FlowRenderer> {
   protected renderer: Renderer;
-  protected renderCallback: (elements: JSX.Element[]) => void;
 
   private resumeFnc: ((resume: boolean) => void) | undefined;
 
-  constructor(renderCallback: (elements: JSX.Element[]) => void, renderer: Renderer) {
-    this.renderCallback = renderCallback;
+  constructor(renderer: Renderer) {
     this.renderer = renderer;
   }
 
   protected async registerStepListener(): Promise<void> {
     const spy = await SpySession.get();
     spy.onPause((stepLabel, info) => {
-      this.renderCallback(this.renderer.renderStepInfoServer(stepLabel, info));
+      this.renderer.renderStepInfoServer(stepLabel, info);
     });
   }
 
   start(): Promise<void> {
     return this.execute().catch((e) => {
-      this.renderCallback(
-        this.renderer.renderLine('red.500', e instanceof Error ? e.message : String(e)),
-      );
-      this.renderCallback(this.renderer.renderSeparator('50px'));
+      this.renderer.renderErrorLine(e instanceof Error ? e.message : String(e), undefined);
+      this.renderer.renderSeparator('50px');
       throw e;
     });
   }

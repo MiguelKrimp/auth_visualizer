@@ -13,6 +13,8 @@ import { EventHandler } from '../../util/EventHandler';
 import { AuthPartiesContainer } from './AuthPartiesContainer';
 
 export class FlowRenderer {
+  protected renderCallback: (elements: JSX.Element[]) => void;
+
   static readonly LEFTX = '20%';
   static readonly RIGHTX = '50%';
   static readonly THIRD_PARTYX = '70%';
@@ -21,8 +23,13 @@ export class FlowRenderer {
   static readonly THIRD_PARTY_COLOR = 'accent1';
 
   private containers: AuthPartiesContainer[] = [];
-
   protected currentContainer?: AuthPartiesContainer;
+
+  protected lastLineDestination?: string;
+
+  constructor(renderCallback: (elements: JSX.Element[]) => void) {
+    this.renderCallback = renderCallback;
+  }
 
   startNewContainer() {
     this.currentContainer = new AuthPartiesContainer();
@@ -40,7 +47,7 @@ export class FlowRenderer {
     return [...this.containers.map((c) => c.render())];
   }
 
-  renderInitial(): JSX.Element[] {
+  renderInitial(): void {
     this.addElements([
       <DeviceLine
         x={FlowRenderer.LEFTX}
@@ -59,35 +66,37 @@ export class FlowRenderer {
       <Separator height="100px" />,
     ]);
 
-    return this.allElements;
+    this.renderCallback(this.allElements);
   }
 
-  renderSeparator(height: string): JSX.Element[] {
+  renderSeparator(height: string): void {
     this.addElements([<Separator height={height} />]);
 
-    return this.allElements;
+    this.renderCallback(this.allElements);
   }
 
-  renderLoginStart(callback: (username: string, password: string) => void): JSX.Element[] {
-    const eventHandler = new EventHandler<void>();
-    this.addElements([
-      <BasicLoginPopup
-        triggerComponent={
-          <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
-            <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
-          </InteractableStep>
-        }
-        onConfirm={(username, password) => {
-          callback(username, password);
-          eventHandler.emit();
-        }}
-      />,
-    ]);
+  async renderLoginStart(): Promise<{ username: string; password: string }> {
+    return new Promise<{ username: string; password: string }>((resolve) => {
+      const eventHandler = new EventHandler<void>();
+      this.addElements([
+        <BasicLoginPopup
+          triggerComponent={
+            <InteractableStep disableAfterInteraction eventHandler={eventHandler}>
+              <ClientStep stepLabel="Login to get epic cat pics!" x={FlowRenderer.LEFTX} />
+            </InteractableStep>
+          }
+          onConfirm={(username, password) => {
+            resolve({ username, password });
+            eventHandler.emit();
+          }}
+        />,
+      ]);
 
-    return [...this.allElements];
+      this.renderCallback(this.allElements);
+    });
   }
 
-  renderDocumentReceived(imageDataUrl: string): JSX.Element[] {
+  renderDocumentReceived(imageDataUrl: string): void {
     this.addElements([
       <ImageDialog
         triggerComponent={
@@ -99,14 +108,14 @@ export class FlowRenderer {
       />,
     ]);
 
-    return [...this.allElements];
+    this.renderCallback(this.allElements);
   }
 
   renderStepInfoClient(
     stepLabel: string,
     info?: Record<string, unknown>,
     callback?: () => void,
-  ): JSX.Element[] {
+  ): void {
     const step = <ClientStep stepLabel={stepLabel} info={info} x={FlowRenderer.LEFTX} />;
 
     if (callback) {
@@ -119,33 +128,40 @@ export class FlowRenderer {
       this.addElements([step]);
     }
 
-    return [...this.allElements];
+    this.renderCallback(this.allElements);
   }
 
-  renderStepInfoServer(stepLabel: string, info?: Record<string, unknown>): JSX.Element[] {
+  renderStepInfoServer(stepLabel: string, info?: Record<string, unknown>): void {
     this.addElements([<ServerStep stepLabel={stepLabel} info={info} x={FlowRenderer.RIGHTX} />]);
 
-    return [...this.allElements];
+    this.renderCallback(this.allElements);
   }
 
-  renderLine(color: string, text: string): JSX.Element[] {
+  protected renderLine(color: string, text: string, x2: string, data: any): void {
     this.addElements([
       <CommunicationLine
         x1={FlowRenderer.LEFTX}
-        x2={`calc(100% - ${FlowRenderer.RIGHTX})`}
+        x2={`calc(100% - ${x2})`}
         color={color}
         text={text}
+        msgData={data}
       />,
     ]);
 
-    return [...this.allElements];
+    this.renderCallback(this.allElements);
   }
 
-  renderLineFromClient(text: string): JSX.Element[] {
-    return this.renderLine(FlowRenderer.CLIENT_COLOR, text);
+  renderErrorLine(text: string, data: any): void {
+    this.renderLine('red.500', text, this.lastLineDestination ?? FlowRenderer.RIGHTX, data);
   }
 
-  renderLineFromServer(text: string): JSX.Element[] {
-    return this.renderLine(FlowRenderer.SERVER_COLOR, text);
+  renderLineFromClient(text: string, data: any): void {
+    this.lastLineDestination = FlowRenderer.RIGHTX;
+    return this.renderLine(FlowRenderer.CLIENT_COLOR, text, FlowRenderer.RIGHTX, data);
+  }
+
+  renderLineFromServer(text: string, data: any): void {
+    this.lastLineDestination = FlowRenderer.LEFTX;
+    return this.renderLine(FlowRenderer.SERVER_COLOR, text, FlowRenderer.LEFTX, data);
   }
 }

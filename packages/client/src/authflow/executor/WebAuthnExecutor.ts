@@ -11,17 +11,13 @@ import { AbstractFlowExecutor } from './AbstractFlowExecutor';
 
 export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
   constructor(renderCallback: (elements: JSX.Element[]) => void) {
-    super(renderCallback, new WebAuthnRenderer());
+    super(new WebAuthnRenderer(renderCallback));
   }
 
   async execute(): Promise<void> {
-    this.renderCallback(this.renderer.renderInitial());
+    this.renderer.renderInitial();
 
-    const credentials = await new Promise<{ username: string; password: string } | undefined>(
-      (resolve) => {
-        this.renderCallback(this.renderer.renderWebAuthnLoginPopup((cred) => resolve(cred)));
-      },
-    );
+    const credentials = await this.renderer.renderWebAuthnLoginPopup();
 
     await this.registerStepListener();
 
@@ -29,63 +25,72 @@ export class WebAuthnExecutor extends AbstractFlowExecutor<WebAuthnRenderer> {
       ? await this.startRegisterFlow(credentials)
       : await this.startAuthenticationFlow();
 
-    this.renderCallback(this.renderer.renderSeparator('50px'));
-    const docEndPoint = new DocumentEndpoint();
-    this.renderCallback(this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`));
-    const image = await docEndPoint.get(`Bearer ${loginToken}`);
-    this.renderCallback(this.renderer.renderLineFromServer('Received Document'));
+    this.renderer.renderSeparator('50px');
 
-    this.renderCallback(this.renderer.renderDocumentReceived(image));
+    const docEndPoint = new DocumentEndpoint();
+    const getData = docEndPoint.getGetMessageData(`Bearer ${loginToken}`);
+    this.renderer.renderLineFromClient(`GET ${docEndPoint.getPath()}`, getData);
+    const image = await docEndPoint.get(getData.headers);
+    this.renderer.renderLineFromServer('Image received', { image });
+
+    this.renderer.renderDocumentReceived(image);
   }
 
   private async startRegisterFlow({ username, password }: { username: string; password: string }) {
     const spy = await SpySession.get();
-    const registerEndPoint = new WebAuthnRegisterEndpoint();
 
     const auth = `Basic ${encodeBasicCredentials(username, password)}`;
 
-    this.renderCallback(this.renderer.renderLineFromClient(`GET ${registerEndPoint.getPath()}`));
-    const { options, token } = await registerEndPoint.get(auth, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received registration options'));
-    this.renderCallback(this.renderer.renderSeparator('20px'));
+    const registerEndPoint = new WebAuthnRegisterEndpoint();
+    const getData = registerEndPoint.getGetMessageData(auth, spy.sessionId);
+    this.renderer.renderLineFromClient(`GET ${registerEndPoint.getPath()}`, getData);
+    const { options, token } = await registerEndPoint.get(getData.headers);
+    this.renderer.renderLineFromServer('Received registration options', { options, token });
 
-    this.renderCallback(this.renderer.renderClientAndAuthenticator());
-    this.renderCallback(this.renderer.renderLineFromClientToAuth('Call WebAuthn API'));
-    this.renderCallback(this.renderer.renderAuthenticatorStep('Waiting for user interaction...'));
+    this.renderer.renderSeparator('20px');
+
+    this.renderer.renderClientAndAuthenticator();
+    this.renderer.renderLineFromClientToAuth('Call WebAuthn API', { options });
+    this.renderer.renderAuthenticatorStep('Waiting for user interaction...');
     const credential = await startRegistration({ optionsJSON: options });
-    this.renderCallback(
-      this.renderer.renderLineFromAuthToClient('Received credential from authenticator'),
-    );
-    this.renderCallback(this.renderer.renderSeparator('20px'));
+    this.renderer.renderLineFromAuthToClient('Received credential from authenticator', {
+      credential,
+    });
 
-    this.renderCallback(this.renderer.renderSecondClientServer());
-    this.renderCallback(this.renderer.renderLineFromClient(`POST ${registerEndPoint.getPath()}`));
-    const loginToken = await registerEndPoint.post(auth, token, credential, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received JWT for authentication'));
+    this.renderer.renderSeparator('20px');
+
+    this.renderer.renderSecondClientServer();
+    const postData = registerEndPoint.getPostMessageData(auth, token, credential, spy.sessionId);
+    this.renderer.renderLineFromClient(`POST ${registerEndPoint.getPath()}`, postData);
+    const loginToken = await registerEndPoint.post(postData.headers, postData.body);
+    this.renderer.renderLineFromServer('Received JWT for authentication', { jwt: loginToken });
 
     return loginToken;
   }
 
   private async startAuthenticationFlow() {
     const spy = await SpySession.get();
+
     const loginEndPoint = new WebAuthnLoginEndpoint();
-
-    this.renderCallback(this.renderer.renderLineFromClient(`GET ${loginEndPoint.getPath()}`));
+    this.renderer.renderLineFromClient(`GET ${loginEndPoint.getPath()}`, undefined);
     const { options, token } = await loginEndPoint.get(spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received authentication options'));
-    this.renderCallback(this.renderer.renderSeparator('20px'));
+    this.renderer.renderLineFromServer('Received authentication options', { options, token });
 
-    this.renderCallback(this.renderer.renderClientAndAuthenticator());
-    this.renderCallback(this.renderer.renderLineFromClientToAuth('Call WebAuthn API'));
-    this.renderCallback(this.renderer.renderAuthenticatorStep('Waiting for user interaction...'));
+    this.renderer.renderSeparator('20px');
+
+    this.renderer.renderClientAndAuthenticator();
+    this.renderer.renderLineFromClientToAuth('Call WebAuthn API', { options });
+    this.renderer.renderAuthenticatorStep('Waiting for user interaction...');
     const credential = await startAuthentication({ optionsJSON: options });
-    this.renderCallback(this.renderer.renderLineFromAuthToClient('Authenticator signed challenge'));
-    this.renderCallback(this.renderer.renderSeparator('20px'));
+    this.renderer.renderLineFromAuthToClient('Authenticator signed challenge', { credential });
 
-    this.renderCallback(this.renderer.renderSecondClientServer());
-    this.renderCallback(this.renderer.renderLineFromClient(`POST ${loginEndPoint.getPath()}`));
-    const loginToken = await loginEndPoint.post(token, credential, spy.sessionId);
-    this.renderCallback(this.renderer.renderLineFromServer('Received JWT for authentication'));
+    this.renderer.renderSeparator('20px');
+
+    this.renderer.renderSecondClientServer();
+    const postData = loginEndPoint.getPostMessageData(token, credential, spy.sessionId);
+    this.renderer.renderLineFromClient(`POST ${loginEndPoint.getPath()}`, postData);
+    const loginToken = await loginEndPoint.post(postData.headers, postData.body);
+    this.renderer.renderLineFromServer('Received JWT for authentication', { jwt: loginToken });
 
     return loginToken;
   }

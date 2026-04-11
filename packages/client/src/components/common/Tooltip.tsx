@@ -17,8 +17,16 @@ function Tooltip(props: TooltipProps) {
       <HoverCard.Trigger asChild>{children}</HoverCard.Trigger>
       <Portal>
         <HoverCard.Positioner>
-          <HoverCard.Content {...contentProps}>
-            <HoverCard.Arrow />
+          <HoverCard.Content
+            {...contentProps}
+            bg="surfaceAlt"
+            color="text"
+            borderColor="line"
+            borderWidth="1px"
+            boxShadow="md"
+            p={2}
+            rounded="md"
+          >
             {content}
           </HoverCard.Content>
         </HoverCard.Positioner>
