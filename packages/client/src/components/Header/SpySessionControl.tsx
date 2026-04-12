@@ -1,8 +1,9 @@
-import { Badge } from '@chakra-ui/react';
+import { Badge, Box } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { SpySession } from '../../api/spySession/SpySession';
 import { Tooltip } from '../common/Tooltip';
+import { SpySessionSettings } from './SpySessionSettings';
 
 export function SpySessionControl() {
   const [socket, setSocket] = useState<SpySession>();
@@ -39,19 +40,22 @@ export function SpySessionControl() {
   }, [socket, error]);
 
   return (
-    <Tooltip content={tooltipContent} disabled={!tooltipContent}>
-      <Badge
-        colorPalette={!error && !socket ? 'yellow' : error ? 'red' : 'green'}
-        variant="surface"
-        px={3}
-        py={1}
-        borderRadius="full"
-        fontFamily="mono"
-        letterSpacing="0.04em"
-        color="background"
-      >
-        Spy Session: {connectionStatus}
-      </Badge>
-    </Tooltip>
+    <Box flexDir="row" display="flex" alignItems="center" gap={3}>
+      <Tooltip content={tooltipContent} disabled={!tooltipContent}>
+        <Badge
+          colorPalette={!error && !socket ? 'yellow' : error ? 'red' : 'green'}
+          variant="surface"
+          px={3}
+          py={1}
+          borderRadius="full"
+          fontFamily="mono"
+          letterSpacing="0.04em"
+          color="background"
+        >
+          Spy Session: {connectionStatus}
+        </Badge>
+      </Tooltip>
+      <SpySessionSettings socket={socket} />
+    </Box>
   );
 }

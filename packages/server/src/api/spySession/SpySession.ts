@@ -51,22 +51,24 @@ export class SpySession<T extends ValidAuthSteps> implements ISpySession<T> {
   }
 
   async step<K extends keyof T>(name: K, data: T[K]['data']): Promise<void> {
+    const stepName = String(name) as StepIDs;
+    this.socket.emit('pause', { name: stepName, data });
     if (!this.config.doSpy) {
       return;
     }
-    const stepName = String(name) as StepIDs;
-
-    this.socket.emit('pause', { name: stepName, data });
+    SpySessionLogger.debug(`Spy (${this.id}) pausing at step ${stepName}`);
 
     return new Promise<void>((resolve, reject) => {
       this.pendingStepReject = reject;
       this.socket.once('resume', (name: StepIDs) => {
         if (name === stepName) {
+          SpySessionLogger.debug(`Spy (${this.id}) resuming at step ${stepName}`);
           resolve();
         }
       });
 
       this.socket.once('abort', () => {
+        SpySessionLogger.debug(`Spy (${this.id}) aborting at step ${stepName}`);
         reject(new Error(`Flow aborted by client`));
       });
     }).finally(() => {

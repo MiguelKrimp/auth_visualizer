@@ -19,18 +19,27 @@ export abstract class AbstractFlowExecutor<Renderer extends FlowRenderer = FlowR
   }
 
   start(): Promise<void> {
-    return this.execute().catch((e) => {
-      const msg = e instanceof Error ? e.message : String(e);
-      const data = e instanceof ResponseError ? e.detailMsg : undefined;
-      this.renderer.renderErrorLine(msg, data);
-      this.renderer.renderSeparator('50px');
-      throw e;
-    });
+    return this.execute()
+      .catch((e) => {
+        const msg = e instanceof Error ? e.message : String(e);
+        const data = e instanceof ResponseError ? e.detailMsg : undefined;
+        this.renderer.renderErrorLine(msg, data);
+        this.renderer.renderSeparator('50px');
+        throw e;
+      })
+      .finally(() => {
+        SpySession.get().then((spy) => spy.offPause());
+      });
   }
 
   abstract execute(): Promise<void>;
 
   async pause(): Promise<boolean> {
+    const spy = await SpySession.get();
+    if (!spy.getDoSpy()) {
+      return true;
+    }
+
     return new Promise<boolean>((resolve) => {
       this.resumeFnc = resolve;
     });

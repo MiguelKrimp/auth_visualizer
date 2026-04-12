@@ -19,6 +19,9 @@ export function CommunicationLine({ x1, x2, color, text, msgData }: Communicatio
           {text}
           {msgData && (
             <Tooltip
+              contentProps={{
+                maxW: '50vw',
+              }}
               content={
                 <CodeBlock.Root
                   mt={1}

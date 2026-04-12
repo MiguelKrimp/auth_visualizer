@@ -26,7 +26,7 @@ export class PasskeyService {
     const registrationOptions = await generateRegistrationOptions({
       rpName: this.rpName,
       rpID: this.rpID,
-      attestationType: 'none',
+      attestationType: 'direct',
       authenticatorSelection: {
         residentKey: 'required',
         userVerification: 'preferred',

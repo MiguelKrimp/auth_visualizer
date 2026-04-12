@@ -43,11 +43,11 @@ export class SpySession {
     this.websocket = socket;
   }
 
-  get doSpy() {
+  getDoSpy() {
     return this.config.doSpy;
   }
 
-  set doSpy(value: boolean) {
+  setDoSpy(value: boolean) {
     this.config.doSpy = value;
     this.websocket.emit('config', this.config);
   }
@@ -57,6 +57,10 @@ export class SpySession {
       this.currentStep = name;
       infoCallback(StepLabels[name], data);
     });
+  }
+
+  offPause(): void {
+    this.websocket.off('pause');
   }
 
   resume() {

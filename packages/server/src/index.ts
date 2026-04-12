@@ -66,4 +66,6 @@ async function main(): Promise<void> {
   );
 }
 
-main();
+main().catch((error) => {
+  Logger.fatal(error, 'Server failed to start');
+});

@@ -36,7 +36,8 @@ export const useFlowExecutorStore = create<ExecutionContext>((set, get) => ({
       .then(() => {
         set({ flowState: FlowState.Completed });
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error('Flow execution failed', e);
         set({ flowState: FlowState.Failed });
       });
   },

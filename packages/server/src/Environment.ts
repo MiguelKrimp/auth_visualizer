@@ -20,7 +20,7 @@ const EnvironmentVars = {
   dbPassword: process.env.DB_PASSWORD as string,
 
   // logging
-  logLevel: process.env.LOG_LEVEL || (process.env.DEVELOPMENT === 'true' ? 'debug' : 'info'),
+  logLevel: process.env.LOG_LEVEL || (process.env.DEVELOPMENT === 'true' ? 'trace' : 'info'),
   shouldWriteLogFile: process.env.LOG_TO_FILE !== 'false',
   logDirectory: process.env.LOG_DIR || path.resolve(process.cwd(), 'logs'),
   logFileName: process.env.LOG_FILE_NAME || 'server.log',
