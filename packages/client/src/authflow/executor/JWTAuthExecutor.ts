@@ -44,10 +44,11 @@ export class JWTAuthExecutor extends AbstractFlowExecutor<FlowRenderer> {
     this.renderer.renderLineFromServer('Image received', { image });
 
     this.renderer.renderDocumentReceived(image);
-    this.renderer.renderStepInfoClient(
-      'Got more cat pics?',
-      undefined,
-      this.getDocumentLoop.bind(this, jwt, spySessionId),
-    );
+    return new Promise((resolve) => {
+      this.renderer.renderStepInfoClient('Got more cat pics?', undefined, async () => {
+        await this.getDocumentLoop(jwt, spySessionId);
+        resolve();
+      });
+    });
   }
 }

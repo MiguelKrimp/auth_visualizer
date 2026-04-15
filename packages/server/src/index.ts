@@ -8,6 +8,7 @@ import { JSONBodyParser } from './api/middleware/static/JSONBodyParser';
 import { JWTErrorCatchMiddleware } from './api/middleware/static/JWTErrorCatch';
 import { RequestLoggingMiddleware } from './api/middleware/static/RequestLogging';
 import { registerResources } from './api/ResourceRegister';
+import { registerClientResource } from './api/ressources/static/FrontendResource';
 import { SpySessionServer } from './api/spySession/SpySessionServer';
 import DataSource from './database/DataSource';
 import { Role } from './database/entities/Role';
@@ -47,6 +48,7 @@ async function main(): Promise<void> {
   app.use(CORSFilter);
 
   registerResources(app);
+  registerClientResource(app);
 
   app.use(ErrorLoggingMiddleware);
   app.use(JWTErrorCatchMiddleware);

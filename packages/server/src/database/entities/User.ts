@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 import DataSource from '../DataSource';
 import { Authenticator } from './Authenticator';
@@ -12,7 +12,7 @@ export class User {
   @Column()
   passwordHash!: string;
 
-  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP()' })
+  @CreateDateColumn()
   createdAt!: Date;
 
   @Column({ type: 'enum', enum: Role, default: Role.TempUser })
