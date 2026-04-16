@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @auth-visualizer/common && npm run build -w @auth-visualizer/server && npm run build -w @auth-visualizer/client && cp -r packages/client/dist packages/server/dist/api/ressources/static/dist",
+    "build": "npm run build -w @auth-visualizer/common && npm run build -w @auth-visualizer/server && npm run build -w @auth-visualizer/client && node scripts/copy-client-dist.mjs",
+    "artifact:build": "npm run build && node scripts/prepare-runtime-artifact.mjs",
     "dev:common": "npm run dev -w @auth-visualizer/common",
     "dev:server": "npm run dev -w @auth-visualizer/server",
     "dev:client": "npm run dev -w @auth-visualizer/client",
