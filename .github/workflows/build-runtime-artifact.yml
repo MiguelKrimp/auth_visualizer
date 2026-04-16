@@ -32,4 +32,4 @@ jobs:
           name: auth-visualizer-runtime-${{ github.sha }}
           path: artifacts/runtime
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
